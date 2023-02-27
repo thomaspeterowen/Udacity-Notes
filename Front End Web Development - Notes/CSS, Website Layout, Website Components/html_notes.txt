@@ -1,0 +1,120 @@
+
+<h1>Observable Universe</h1>
+<h2>Milky Way Galaxy</h2>
+<h3>Earth</h3>
+<h4>USA</h4>
+<h5>Norfolk, VA</h5>
+<h6>Main Street</h6>
+
+<p>
+  The sweet-faced and loving Labrador Retriever is actually one of the most
+  popular dog breeds.
+</p>
+<p>
+  Labs are extremely friendly with an easygoing and high-spirited personality
+  which is great for bonding with the whole family.
+</p>
+
+<style>
+p {
+  color: black;
+}
+.red {
+  color: red;
+}
+</style>
+<p>
+  This sentence needs some <span class=”red”>visual emphasis</span> to really bring home the point.
+</p>
+
+<blockquote cite="https://www.wikiwand.com/en/Scooby-Doo_(character)">
+  <p>Ruh-roh--RAGGY!!!</p>
+  <footer>—Scooby Doo, <cite>Mystery Incorporated</cite></footer>
+</blockquote>
+
+<p>
+  I jump in delight<br />
+  I run off in frenzy<br />
+  For now I have just realized<br />
+</p>
+
+---
+
+<p>New puppy shopping list</p>
+<ul>
+  <li>Treats</li>
+  <li>Dog food</li>
+  <li>Leash</li>
+  <li>Collar</li>
+  <li>Dishes</li>
+  <li>ID tag</li>
+</ul>
+
+<p>Steps after adopting a puppy</p>
+<ol>
+  <li>Spoil the puppy</li>
+  <li>Be happy with your puppy</li>
+  <li>Repeat</li>
+</ol>
+
+---
+
+<img
+  src="images/nefertiti.jpg"
+  alt="A smiling Labrador Retriever"
+  width="480"
+  height="320"
+/>
+
+<a href="https://thelabradorclub.com" rel="noopener" target="_blank"
+  >Join The Labrador Retriever Club</a>
+  
+<!-- line-break -->
+<br />
+<!-- image -->
+<img src="https://dog.com/image.png" alt="Description" />
+<!-- text input -->
+<input type="text" />
+
+---
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Coding Journal</title>
+  </head>
+</html>
+
+<body>
+  <div>
+    <h1>Sibling to p, but also grandchild of body</h1>
+    <p>Sibling to h1, but also grandchild of body</p>
+  </div>
+</body>
+
+---
+
+<!-- A text input -->
+<input type="text" />
+<!-- A checkbox -->
+<input type="checkbox" />
+<!-- A radio button -->
+<input type="radio" />
+
+<label for="color-select">Choose a color:</label>
+
+<select id="color-select">
+  <option value="">--Please choose an option--</option>
+  <option value="blue">Blue</option>
+  <option value="red">Red</option>
+  <option value="green">Green</option>
+  <option value="yellow">Yellow</option>
+  <option value="orange">Orange</option>
+  <option value="pink">Pink</option>
+</select>
+
+<label for="learn">What do you hope to learn today?</label>
+<textarea id="learn" name="learn" rows="5" cols="30">
+I hope to learn about...
+</textarea>
+

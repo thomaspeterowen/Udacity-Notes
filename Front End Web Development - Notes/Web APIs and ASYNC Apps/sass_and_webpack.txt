@@ -1,0 +1,203 @@
+
+ --- SASS AND WEBPACK ---
+ 
+SASS: Syntactically Awesome Stylesheet
+
+a css pre-processor allowing use of variables, operations, mixins, loops, functions, imports etc...
+
+allows for better, more flexible and succinct styles
+
+used with webpack, as transpile to CSS required for browser...
+
+docu: https://sass-lang.com/guide
+
+---
+
+sass topics:
+
+nesting - 
+
+	nav {
+	  ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	  }
+
+	  li { display: inline-block; }
+
+	  a {
+		display: block;
+		padding: 6px 12px;
+		text-decoration: none;
+	  }
+	}
+
+variables - 
+
+	$font-stack: Helvetica, sans-serif;
+	$primary-color: #333;
+
+	body {
+	  font: 100% $font-stack;
+	  color: $primary-color;
+	}
+
+ampersand - 
+
+	.some-class {
+	  &.another-class {}
+	}
+	
+---
+
+repo forked to here: https://github.com/thomaspeterowen/fend-webpack-sass
+
+below are the steps performed to get to the next step:
+
+0-initial-setup
+	npm install 
+	under fend-webpack-sass/src/client/styles/, change the four .css files + resets.css and change to .scss
+	
+1-add-sass-loaders
+	install tools
+	npm i -D style-loader node-sass css-loader sass-loader
+	add to webpack.dev.js
+	{
+			test: /\.scss$/,
+			use: [ 'style-loader', 'css-loader', 'sass-loader' ]
+	}	
+	note: chained loaders run from right to left!
+	update client/index.js
+		import './styles/resets.scss'
+		import './styles/base.scss'
+		import './styles/footer.scss'
+		import './styles/form.scss'
+		import './styles/header.scss'		
+
+	npm run build-dev
+	npm run start
+	(if facing errors, add the sass loaders to build-prod and first run "npm run build-prod")
+	
+	-> verify styles in bundled js file
+	-> verify browser start with styles available
+
+2-fixing-js
+
+	IIFE: immediately invoked function expression
+	js function which runs as soon as it is defined and are not named
+	
+	add to webpack.prod.js
+	
+         {
+             test: /\.scss$/,
+             use: [ 'style-loader', 'css-loader', 'sass-loader' ]
+         }
+
+	update webpack.prod.js and webpack.dev.js
+
+		output: {
+			 libraryTarget: 'var',
+			 library: 'Client'
+		 },	
+	
+	update client/index.js
+	
+		export {
+		 checkForName,
+		 handleSubmit
+		}
+
+	update client/views/index.html
+		use Client.handleSubmit
+		
+	client/js/formHandler.js
+		Client.checkForName(formText)
+
+	update port in formHandler.js
+	
+		 fetch('http://localhost:8081/test')
+		 .then(res => {
+			 return res.json()
+		 })
+		 .then(function(data) {
+			 document.getElementById('results').innerHTML = data.message
+		 })	
+	
+	update port in server/index.js
+	
+		app.listen(8081, function () {
+		 console.log('Example app listening on port 8081!')
+		})	
+		
+	npm run build-dev
+	npm run build-prod
+	npm start
+	
+    -> verify that both webpack dev server and node server should be running and working
+
+3-webpack-production-config
+
+	install plugins
+	npm install --save-dev mini-css-extract-plugin terser-webpack-plugin@4 optimize-css-assets-webpack-plugin
+
+	update webpack.prod.js
+		const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+		const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+		const TerserPlugin = require('terser-webpack-plugin');
+	
+	and
+	
+		optimization: {
+		  minimizer: [new TerserPlugin({}), new OptimizeCSSAssetsPlugin({})],
+		  },
+		  
+	and 
+	
+		{
+		test: /\.scss$/,
+		use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"],
+		},	
+		
+	and
+	
+		new MiniCssExtractPlugin({ filename: "[name].css" })
+		
+	npm i -D mini-css-extract-plugin
+	npm i -D optimize-css-assets-webpack-plugin terser-webpack-plugin
+	npm run build-prod
+	
+	install below versions if not working:
+	
+	mini-css-extract-plugin@ ^0.8.0
+	optimize-css-assets-webpack-plugin@^5.0.3
+	terser-webpack-plugin@^1.3.0
+	
+	-> verify that css files are loaded and minified
+
+4-service-workers
+
+	update webpack.prod.js
+	
+	const WorkboxPlugin = require('workbox-webpack-plugin');
+	
+	and add below to plugin list:
+	new WorkboxPlugin.GenerateSW()
+
+	install plugin
+	npm install workbox-webpack-plugin --save-dev
+	
+	add script to bottom of views/index.html
+	
+		<script>
+		 // Check that service workers are supported
+		 if ('serviceWorker' in navigator) {
+			 // Use the window load event to keep the page load performant
+			 window.addEventListener('load', () => {
+				 navigator.serviceWorker.register('/service-worker.js');
+			 });
+		 }
+		</script>	
+		
+	didn't work for me... check course notes !!!
+

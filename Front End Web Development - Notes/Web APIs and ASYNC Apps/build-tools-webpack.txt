@@ -1,0 +1,178 @@
+
+--- Intro to Build Tools
+
+allows developers to automate their process for handling website assets, saving them lots of time and headache
+
+one example is web pack
+
+-- webpack --
+
+at its core, webpack is a static module bundler for modern JavaScript applications.
+can be used for example to combine and simplify all files for an app (html, css, js, json) into a new version for deployment
+
+example repo in github will show each step with notes below
+use git checkout to switch between branches
+
+we will be using webpack version 4
+
+https://github.com/thomaspeterowen/fend-webpack-content
+
+0-initial-setup
+	git checkout 0-initial-setup
+	node and npm must be installed
+		node -v
+		npm -v
+	can also use "npm audit fix" to fix any vulnerabilities
+	npm run start
+	
+	website should be available at http://localhost:8080/
+	
+1-install-webpack
+	steps below have to be performed on 0-intital-setup in order to match with 1-install-webopack
+	1-install-webpack is the end setup with webpack installed
+	
+	npm install webpack@4.43.0
+	npm install webpack-cli@3.3.11
+		dependencies should be added to list in package.json
+	add to package.json
+		"scripts": {
+		"build": "webpack"
+		},
+	update devDependencies
+		"devDependencies":{
+		"webpack-dev-server": "^3.11.0",
+		},
+	create file "webpack.config.js"
+		const path = require("path")
+		const webpack = require("webpack")
+		module.exports = {
+		}
+	npm run build -> should get errot as config file still empty...
+	
+2-add-webpack-entry
+
+	add index.js file to client folder
+	add alert to file
+	add "entry: './src/client/index.js'" to webpack.config.js
+	build webpack "npm run build"
+	-> verify that 'dist' folder is created, with alert written in it
+
+3-webpack-output-and-loaders
+
+	babel: converts newer JS code into a backwards compatible version 
+	of JavaScript in current and older browsers or environments.
+
+	install babel
+	npm i -D @babel/core@^7.5.4 @babel/preset-env@^7.5.4 babel-loader@^8.0.6
+	create new file .babelrc in project root
+	add "{ ‘presets’: ['@babel/preset-env'] }" and save
+	add the following to webpack.config.js
+	
+		module.exports = {
+		  entry: "./src/client/index.js",
+		  devtool: "source-map",
+		  module: {
+			rules: [
+			  {
+				test: "/.js$/",
+				exclude: /node_modules/,
+				loader: "babel-loader",
+			  },
+			],
+		  },
+		};	
+		
+	add following to index.js
+		import { checkForName } from './js/nameChecker'
+		import { handleSubmit } from './js/formHandler'
+
+	in index.html, replace referenced scripts with new line:
+	    <script type="text/javascript" src="../../../dist/main.js"></script>
+	add the word "export" before the function definitons in formHandler.js and nameChecker.js
+
+	build webpack "npm run build"
+	-> verify that 'dist' folder is created, output files created
+	
+4-webpack-plugins
+	
+	install plugin
+		npm i -D html-webpack-plugin
+	require plugin in webpack.config
+		const HtmlWebPackPlugin = require('html-webpack-plugin')
+	add plugin to webpack.config
+	
+	  plugins: [
+		new HtmlWebPackPlugin({
+		  template: "./src/client/views/index.html",
+		  filename: "./index.html",
+		}),
+	  ],	
+	
+	in server.js change 'src/client' to 'dist'
+	and update sendFile code
+	  res.sendFile("dist/index.html");
+
+	may need up update dependency version: "html-webpack-plugin": "^3.2.0",
+	and npm install 
+	npm run build
+	-> verify that 'dist' folder is created, output files created including html
+	
+5-webpack-mode
+
+	create copy of webpack.config.js
+	call two versions 
+	webpack.prod.js with
+		mode: 'production'
+	and webpack.dev.js with 
+		mode: 'development',
+		devtool: 'source-map',
+		
+	update package.json
+
+		"scripts": {
+			"build-prod": "webpack --config webpack.prod.js",
+			"build-dev": "webpack --config webpack.dev.js --open"
+		},	
+
+6-webpack-for-convenience
+
+	install webpack-dev-server and clean-webpack-plugin
+		npm i -D webpack-dev-server
+		npm i -D clean-webpack-plugin
+		
+	add webpack-dev-server to dev build script in package.json
+		"build-dev": "webpack-dev-server --config webpack.dev.js --open",
+	add to webpack.config
+		const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+	and add as new plugin with parameters
+        
+		new CleanWebpackPlugin({
+                // Simulate the removal of files
+                dry: true,
+                // Write Logs to Console
+                verbose: true,
+                // Automatically remove all unused webpack assets on rebuild
+                cleanStaleWebpackAssets: true,
+                protectWebpackAssets: false
+        })
+
+	npm run build-dev
+	
+	clean will delete dist folder before new generation
+	dev-server will open browser and listen for file changes etc.
+
+
+---------
+
+All steps have been implemented here:
+
+D:\Udacity\fend-webpack-content
+
+but step by step you can see with the different branches of 
+https://github.com/thomaspeterowen/fend-webpack-content
+
+
+
+ES5/ES6 quick comparison
+	http://es6-features.org/#Constants
+	

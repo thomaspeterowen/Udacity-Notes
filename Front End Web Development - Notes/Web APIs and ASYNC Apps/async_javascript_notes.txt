@@ -1,0 +1,148 @@
+
+-- setTimeout
+
+setTimeout(function(){ console.log('third') }, 3000);
+
+function sync(){
+console.log('first')
+}
+
+sync()
+console.log('second')
+
+-- Promises - now the accepted best practice for async functions in JS
+
+special function to return either satisfy (resolve) or fail (reject)
+resolve -> usually another task triggered
+reject -> usually throw an error
+
+
+basic syntax:
+	var promise = new Promise(function(resolve, reject) {
+	  // do a thing, possibly async, then…
+
+	  if (/* everything turned out fine */) {
+		resolve("Stuff worked!");
+	  }
+	  else {
+		reject(Error("It broke"));
+	  }
+	});
+
+
+async fetch function:
+	const postData = async ( url = '', data = {})=>{
+
+		  const response = await fetch(url, {
+		  method: 'POST', // *GET, POST, PUT, DELETE, etc.
+		  credentials: 'same-origin', 
+		  headers: {
+			  'Content-Type': 'application/json',
+		  },
+		  body: JSON.stringify(data), // body data type must match "Content-Type" header        
+		});
+
+		  try {
+			const newData = await response.json();
+				   return newData
+		  }catch(error) {
+		  console.log("error", error);
+		  // appropriately handle the error
+		  }
+	  }
+
+	 postData('/addMovie', {movie:' the matrix', score: 5})
+	 
+-- 'async' is the important keyword
+	means waiting for something to happen before executing next line of code
+	with 'async' you have the following keywords available
+	await
+		used where next action requires data from current action
+	try / catch
+		much like if/else
+
+-- Fetch API - built on top of native JS promises
+
+APIs normally required registraion and you get given an API key, which must be included with each call
+
+example client side code to make GET request to API
+
+  /* WEB API WITH FETCH DEMO--  */
+  let baseURL = 'http://api.animalinfo.org/data/?animal='
+  let apiKey = '&appid=9f15e45060...';
+  const newAnimal =  document.getElementById('animal').value;
+
+  document.getElementById('generate').addEventListener('click', performAction);
+
+  function performAction(e){  
+    getAnimalDemo(baseURL,newAnimal, apiKey)
+  }
+
+
+  const getAnimalDemo = async (baseURL, animal, key)=>{
+  // 1.
+    const res = await fetch(baseURL+animal+key)
+  // 2. Call Fake API
+    // const res = await fetch('/fakeAnimalData')
+    try {
+
+      const data = await res.json();
+      console.log(data)
+      // 1. We can do something with our returned data here-- like chain promises!
+
+      // 2. 
+      // postData('/addAnimal', data)
+    }  catch(error) {
+      // appropriately handle the error
+      console.log("error", error);
+    }
+  }
+
+-- chaining promises
+
+server side, to add the sent data to our app:
+
+	app.post('/addAnimal', addAnimal);
+	function addAnimal(req,res){
+
+	  newEntry = {
+		animal: req.body.animal,
+		facts: req.body.fact,
+		fav: req.body.fav
+	  }
+
+	  animalData.push(newEntry)
+	  console.log(animalData)
+	}
+
+chaining together two async functions, POST request (to /animal) and then retieve data with a GET request (to /all)
+
+	function postGet(){
+	  postData('/animal', {fav:'lion'})
+		.then(function(data){
+		  retrieveData('/all')
+		})
+	}
+
+	postGet()
+
+corresponding server side code:
+
+	// GET route
+	app.get('/all', sendData);
+
+	function sendData (request, response) {
+	  response.send(projectData);
+	};
+
+	// POST an animal
+	const data = [];
+
+	app.post('/animal', addAnimal);
+
+	function addAnimal (req,res){
+		data.push(req.body);
+	};
+
+setting the UI value
+	document.getElementById("score").innerHTML = data.returnedScore;

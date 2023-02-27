@@ -1,0 +1,321 @@
+p {
+  color: red;
+}
+
+--
+
+.brand {
+  color: red;
+}
+
+--
+
+#solo {
+  color: red;
+}
+
+--
+
+selector:pseudo-class {
+  property: value;
+}
+
+--
+
+img[alt]
+img[alt=val]
+
+--
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Helvetica", "Arial", sans-serif;
+}
+
+--
+
+Inline
+<p style="color: red; font-size: 20px;">I'm learning to code!</p>
+
+Style Tag
+<head>
+  <style>
+    p {
+      color: red;
+      font-size: 20px;
+    }
+  </style>
+</head>
+
+External Stylesheets
+<link href="https://udacity.com/style.css" type="text/css" rel="stylesheet" />
+or
+<link href="./style.css" type="text/css" rel="stylesheet" />
+or
+<link rel="stylesheet" href="styles.css" />
+
+--
+
+// import from other files
+// at the top of your main CSS file
+
+@import “./layout”;
+@import “./images”;
+@import “./blog-cards”;
+
+--
+
+content (height and width)
+padding
+border
+margin
+
+--
+
+display: inline 		// no width and height because it just occupies the space it takes up with its text content
+display: inline-block 	// like inline except you can add width and height
+display: block 			// takes up its entire line no matter what
+display: none 			// nothing is displayed - takes up no width and height from the DOM
+
+--
+
+position: absolute; // on top of eachother
+
+--
+
+Absolute units:
+	px
+	in
+	mm
+	cm
+	
+Relative units:
+	%
+	em
+	vw
+	vh
+	
+--
+
+Typography
+
+text-align: left;
+text-align: right;
+text-align: center;
+text-align: justify;
+
+font-size: 24px;
+font-size: 1.4em;
+
+color: yellow;
+
+line-height: 1.1em; // distance between lines
+
+--
+
+margin: auto
+
+--
+
+a {
+  text-decoration: none;
+}
+
+--
+
+line-through
+<ins> or <del> better than text-decoration
+
+--
+
+Google Fonts
+
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+</head>
+
+.box{
+  font-family: 'Montserrat', sans-serif;
+}
+
+--
+
+HEX
+
+#p1 {
+  background-color: #ff0000;
+}
+
+--
+
+RGB
+
+#p1 {
+  background-color: rgb(255, 0, 0);
+}
+
+--
+
+smooth corners:
+	border-radius: 25px;
+	padding: 32
+
+--
+
+use image as background:
+	background-image: url("demo.png");
+	background-size: cover;
+	
+--
+
+flexbox
+
+parent element:
+
+.container{
+  display:flex;
+}
+
+flex-direction: row;
+flex-direction: row-reverse;
+flex-direction: column;
+flex-direction: row-reverse;
+
+.container{
+  display:flex;
+  flex-direction: row
+}
+
+--
+	
+justify-content: // controls alignment of all items on the main axis
+	flex-start
+	flex-end
+	center
+	space-around
+	space-between
+	space-evenly --- recommended
+	
+align-items: // controls alignment of all items on the cross axis
+	stretch
+	flex-start
+	flex-end
+	center
+
+--
+
+display: grid
+
+CSS Grid v. Flexbox
+
+Grid is two dimensional, while Flex is one
+Grid is layout first, while Flexbox is content first
+Flex is for components of an app, Grid is for the app layout itself
+
+--
+
+grid-template-columns: 60px 60px;
+grid-template-rows: 160px 60px;
+grid-gap: 10px;
+
+--
+
+.container {
+  display:grid;
+  grid-template-columns: 300px 300px 300px;
+  grid-template-rows: 250px 600px;
+  grid-template-areas: 
+  "hd hd hd hd hd hd hd hd"
+  "sd sd sd main main main main main"
+  "ft ft ft ft ft ft ft ft";
+}
+  
+--
+
+.header {
+  grid-area: hd;
+}
+
+--
+
+#one { 
+/* row start/column start/ row end/ column end */
+grid-area: 1/2/3/3;
+}
+
+--
+
+fr = fraction of the available space in the grid container
+
+grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+
+--
+
+grid-template-columns: repeat(7, 1fr);
+
+--
+
+generate the number of rows based on the content and available space - 
+
+grid-auto-rows: minmax(100px, auto);
+
+--
+
+link to other page - <a href="go.html">Go to page</a>
+
+--
+
+viewport - the area of the window in which web content can be seen
+
+--
+
+@media(feature:value)
+
+@media(min-width:900px) {
+  body{
+   background:red;
+ }
+}
+
+// media code at bottom of css file !!!
+
+--
+
+/* Anything smaller than first breakpoint 600px */
+.container {
+  // rules for small screen
+}
+
+/* Medium Screens */
+@media (min-width: 600px) and (max-width:900px) {
+  .container {
+    // rules for medium-sized screen
+  }
+}
+
+/* Large Screens */
+@media (min-width:901px) {
+  .container {
+    // rules for large screen
+  }
+}
+
+--
+
+nested grid
+
+.container {
+  display:grid;
+  // ...
+}
+
+#one {
+  display:grid
+}
+
+--
+

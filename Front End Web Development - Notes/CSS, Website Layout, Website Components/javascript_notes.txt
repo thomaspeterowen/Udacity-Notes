@@ -1,0 +1,268 @@
+
+let / const
+
+Variables declared with let can be reassigned, but can’t be redeclared in the same scope.
+Variables declared with const must be assigned an initial value, but can’t be redeclared in the same scope, and can’t be reassigned.
+
+--
+
+use let when you plan to reassign new values to a variable.
+use const when you don’t plan on reassigning new values to a variable.
+
+--
+
+Is there any reason to use var anymore? Not really.
+
+--
+
+Template Literals
+
+let message = `${student.name} please see ${teacher.name} in ${teacher.room} to pick up your report card.`;
+
+--
+
+Destructuring: 
+
+(array)
+
+const point = [10, 25, -34];
+
+const [x, y, z] = point;
+
+console.log(x, y, z);
+
+--
+(object)
+
+const gemstone = {
+  type: 'quartz',
+  color: 'rose',
+  carat: 21.29
+};
+
+const {type, color, carat} = gemstone;
+
+console.log(type, color, carat);
+
+--
+
+Object literal shorthand
+
+let type = 'quartz';
+let color = 'rose';
+let carat = 21.29;
+
+const gemstone = {type, color, carat};
+
+--
+
+Shorthand method names (no longer needed to have funtion keyword)
+
+let gemstone = {
+  type,
+  color,
+  carat,
+  calculateWorth() { ... }
+};
+
+--
+
+Iteration: 
+
+FOR
+
+const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+for (let i = 0; i < digits.length; i++) {
+  console.log(digits[i]);
+}
+
+FOR ...  IN
+
+const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+for (const index in digits) {
+  console.log(digits[index]);
+}
+
+FOR ... OF
+
+const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+for (const digit of digits) {
+  console.log(digit);
+}
+
+CONTINUE ()
+
+const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+for (const digit of digits) {
+  if (digit % 2 === 0) {
+    continue;
+  }
+  console.log(digit);
+}
+
+--
+
+Spread operator
+
+const books = ["Don Quixote", "The Hobbit", "Alice in Wonderland", "Tale of Two Cities"];
+console.log(...books);
+
+--
+
+Concat
+
+const fruits = ["apples", "bananas", "pears"];
+const vegetables = ["corn", "potatoes", "carrots"];
+const produce = fruits.concat(vegetables);
+console.log(produce);
+
+OR
+
+const fruits = ["apples", "bananas", "pears"];
+const vegetables = ["corn", "potatoes", "carrots"];
+
+const produce = [...fruits, ...vegetables]
+
+console.log(produce);
+
+--
+
+Rest (opposite of the spread operator)
+
+const order = [20.17, 18.67, 1.50, "cheese", "eggs", "milk", "bread"];
+const [total, subtotal, tax, ...items] = order;
+console.log(total, subtotal, tax, items);
+
+--
+
+Variadic functions:
+
+functions that take an indefinite number of arguments
+
+function sum(...nums) {
+  let total = 0;  
+  for(const num of nums) {
+    total += num;
+  }
+  return total;
+}
+
+---
+
+select an element by ID
+	document.getElementById('footer');
+	it is called on the document object
+	it returns a single item
+
+select elements by class or tag
+	document.getElementsByClassName('brand-color');
+	document.getElementsByTagName('p');
+	both methods use the document object
+	both return multiple items
+	the list that's returned is not an array
+
+query selector
+	// find and return the element with an ID of "header"
+	document.querySelector('#header');
+
+	// find and return the first element with the class "header"
+	document.querySelector('.header');
+
+	// find and return the first <header> element
+	document.querySelector('header');
+	
+	returns a single element
+	
+query selector all
+	document.querySelectorAll('.header');
+	returns a list of elements
+	
+const allHeaders = document.querySelectorAll('header');
+for(let i = 0; i < allHeaders.length; i++){
+    console.dir(allHeaders[i]);
+}
+
+---
+
+<h1 id="pick-me">Greetings To <span>All</span>!</h1>
+
+const innerResults = document.querySelector('#pick-me').innerHTML;
+console.log(innerResults); // logs the string: "Greetings To <span>All</span>!"
+
+const outerResults = document.querySelector('#pick-me').outerHTML;
+console.log(outerResults); // logs the string: "<h1 id="pick-me">Greetings To <span>All</span>!</h1>"
+
+---
+
+.textContent sets/gets the text content of an element...pretty clear and simple.
+
+.innerText, on the other hand, is a little trickier. Let's see this in action and then we'll discuss it!
+
+---
+
+.createElement() to create new elements
+.appendChild() to add a child element to a parent element as its last child
+.createTextNode() to create a text node
+.insertAdjacentHTML() to put HTML text anywhere around an element
+
+if an element already exists in the DOM and this element is passed to .appendChild(), the .appendChild() method will move it rather than duplicating it
+an element's .textContent property is used more often than creating a text node with the .createTextNode() method
+the .insertAdjacentHTML() method's second argument has to be text, you can't pass an element
+
+.removeChild()
+.remove()
+
+The difference is that with .removeChild() must be called on the parent of the element being removed and must be passed the child to be removed, while .remove() can be called directly on the element to delete.
+
+.firstChild
+.firstElementChild
+.parentElement
+
+---
+
+modifying individual styles with .style.<prop>
+updating multiple styles at once with .style.cssText
+getting/setting a list of classes with .className
+getting/setting/toggling CSS classes with .classList
+
+---
+
+const mainHeading = document.querySelector('h1');
+
+mainHeading.addEventListener('click', function () {
+  console.log('The heading was clicked!');
+});
+
+---
+
+function myEventListeningFunction() {
+    console.log('howdy');
+}
+
+// adds a listener for clicks, to run the `myEventListeningFunction` function
+document.addEventListener('click', myEventListeningFunction);
+
+// immediately removes the click listener that should run the `myEventListeningFunction` function
+document.removeEventListener('click', myEventListeningFunction);
+
+--
+
+prevent default
+
+const links = document.querySelectorAll('a');
+const thirdLink = links[2];
+
+thirdLink.addEventListener('click', function (event) {
+    event.preventDefault();
+    console.log("Look, ma! We didn't navigate to a new page!");
+});
+
+---
+
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('the DOM is ready to be interacted with!');
+});
