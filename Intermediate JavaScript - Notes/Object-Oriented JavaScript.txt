@@ -1,0 +1,347 @@
+
+--- Object-Orientated JavaScript ---
+
+Array: an ordered collection of elements, enclosed by square brackets.
+
+	const myArray = [];
+
+	const fruits = ['apple', 'banana', 'orange', 'grape', 'lychee'];
+
+	fruits[4]; -> 'lychee'
+
+---
+
+Object: an unordered collection of associated key/value pairs, enclosed by curly brackets.
+
+	const myObject = {};
+
+	const car = {
+	  color: 'red',
+	  year: 1992,
+	  isPreOwned: true
+	};
+
+	color is a key
+	'red' is a value
+	each key/value pair is called a property of the object
+
+	key can have no, single or double quotes. Must have quotes if containing reserved words or spaces / special characters.
+
+---
+
+We access data using either dot or square bracket notation.
+
+	const bicycle = {
+	  color: 'blue',
+	  type: 'mountain bike',
+	  wheels: {
+		diameter: 18,
+		width: 8
+	  }
+	};
+
+	bicycle.color; -> 'blue'
+
+	bicycle['color']; -> 'blue'
+
+	bicycle.wheels.width; -> 8
+
+	bicycle['wheels']['width']; -> 8
+
+	often square brackets are better (when key is number + when variables are assigned to property names)
+
+	to read nested objects
+
+	greetings['hello']['portuguese']
+	or
+	greetings.hello.portuguese;
+
+---
+
+Creating Objects
+
+	// Using literal notation:
+	const myObject = {};
+
+	or
+
+	// Using the Object() constructor function:
+	const myObject = new Object();
+
+---
+
+Objects are mutable -> data can be changed.
+
+	const cat = {
+	  age: 2,
+	  name: 'Bailey',
+	  meow: function () {
+		console.log('Meow!');
+	  },
+	  greet: function (name) {
+		console.log(`Hello ${name}`);
+	  }
+	};
+
+	cat.age += 1;
+	cat.age;
+	// 3
+
+	cat.name = 'Bambi';
+	cat.name;
+	// 'Bambi'
+
+	->
+
+	{
+	  age: 3,
+	  name: 'Bambi',
+	  meow: function () {
+		console.log('Meow!');
+	  },
+	  greet: function (name) {
+		console.log(`Hello ${name}`);
+	  }
+	};
+
+---
+
+Adding Properties
+
+	const printer = {};
+
+	printer.on = true;
+	printer.mode = 'black and white';
+
+	printer['remainingSheets'] = 168;
+
+	printer.print = function () {
+	  console.log('The printer is printing!');
+	};
+
+	->
+
+	{
+	  on: true,
+	  mode: 'black and white',
+	  remainingSheets: 168,
+	  print: function () {
+		console.log('The printer is printing!');
+	  }
+	}
+
+---
+
+Removing Properties
+
+	delete printer.mode;
+	// true
+
+	printer.mode;
+	// undefined
+
+---
+
+Passing Arguments
+
+	Primitive (immutable)
+	
+		e.g. numbers, strings, booleans, etc.
+
+		function changeToEight(n) {
+		  n = 8; // whatever n was, it is now 8... but only in this function!
+		}
+
+		let n = 7;
+
+		changeToEight(n);
+
+		console.log(n);
+		// 7
+
+	--
+
+	Object (mutable)
+
+		let originalObject = {
+		  favoriteColor: 'red'
+		};
+
+		function setToBlue(object) {
+		  object.favoriteColor = 'blue';
+		}
+
+		setToBlue(originalObject);
+
+		originalObject.favoriteColor;
+		// 'blue'
+
+		If you pass an object into a function, Javascript passes a reference to that object.
+		Note: making changes to the copy of an object has a direct effect on the original object
+
+---
+
+Comparing an Object with Another Object
+
+	Will only return true when comparing two references to exactly the same object.
+	
+---
+
+Functions vs. Methods
+
+	another name for a function property of an object is a method!
+
+	Add function to object
+
+		developer.sayHello = function () {
+		  console.log('Hi there!');
+		};
+
+	Calling
+
+		developer.sayHello();
+		// 'Hi there!'
+
+		developer['sayHello']();
+		// 'Hi there!'
+
+	Passing Arguments Into Methods
+
+		const developer = {
+		  name: 'Andrew',
+		  sayHello: function () {
+			console.log('Hi there!');
+		  },
+		  favoriteLanguage: function (language) {
+			console.log(`My favorite programming language is ${language}`);
+		  }
+		};
+
+
+		developer.favoriteLanguage('JavaScript');
+		// My favorite programming language is JavaScript'
+
+---
+
+Call Methods by Property Name
+
+	using names functions is also valid JavaScript
+
+		const greeter = {
+		  greet: function sayHello() {
+			console.log('Hello!');
+		  }
+		};
+
+		greeter.greet(); -> 'Hello!'
+
+---
+
+A Method Can Access the Object it was Called On
+
+	this !!! (methods can directly access the object that it is called on)
+
+	const triangle = {
+	  type: 'scalene',
+	  identify: function () {
+		console.log(`This is a ${this.type} triangle.`);
+	  }
+	};
+
+	triangle.identify(); -> 'This is a scalene triangle.'
+
+	you can also manipulate an object's properties
+
+		this.type = 'acute';
+		console.log(`This is a ${this.type} triangle.`);		
+
+---
+
+How the function is invoked determines the value of this inside the function.
+
+	Invoking as a method -> 'this' is whatever is left of the dot at invocation.
+		
+		chameleon.lookAround();
+
+	Invoking as a regular function -> the value of this is the global window object.
+
+		whoThis();
+
+---
+
+The window Object
+
+	globally accessible to your JavaScript code using the identifier 'window'
+	
+	provides access to so much:
+		The page's URL (window.location;)
+		The vertical scroll position of the page (window.scrollY')
+		Scrolling to a new location (window.scroll(0, window.scrollY + 200); to scroll 200 pixels down from the current location)
+		Opening a new web page (window.open("https://www.udacity.com/");)
+
+	Global Variables are Properties on window
+
+		var currentlyEating = 'ice cream';
+
+		window.currentlyEating === currentlyEating
+		// true
+
+		Only the var keyword will add them to the window object.
+		
+		Using let or const will not add to window object.
+
+	Global Functions are Methods on window
+	
+		function learnSomethingNew() {
+		  window.open('https://www.udacity.com/');
+		}
+
+		window.learnSomethingNew === learnSomethingNew
+		// true	
+
+---
+
+Global variables and functions are not ideal.
+
+	Tight coupling
+		code that is too dependent on the details of each other
+		e.g. function using globally declared variable, if it is changes, then also must be changed in function
+
+	Name collisions		
+		when two (or more) functions depend on a variable with the same name
+		both functions will try to update variable / set the variable, but changes are overridden by each other
+
+	You should write as few global variables as possible. 
+	Write your variables inside of the functions that need them, keeping them as close to where they are needed as possible. 
+	There are times when you'll need to write global variables, but you should only write them as a last resort!
+
+---
+
+Object Methods
+
+When Object.keys() is given an object, it extracts just the keys of that object, then returns those keys in an array:
+
+Object.keys(dictionary);
+// ['car', 'apple', 'cat', 'dog']
+
+Similar for values (however less browser support for this one!):
+
+Object.values(dictionary);
+// ['automobile', 'healthy snack', 'cute furry animal', 'best friend']
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
