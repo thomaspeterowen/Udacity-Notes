@@ -1,0 +1,313 @@
+
+Functions in JS are first-class functions and thus can be:
+
+	stored in variables
+	returned from a function
+	passed as arguments into another function
+	
+	-> you can actually think of functions as objects!
+
+---
+
+Functions must always return one value
+
+	higher-order function = a function that takes in / returns another function
+
+		function alertThenReturn() {
+		  alert('Message 1!');
+
+		  return function () {
+			alert('Message 2!');
+		  };
+		}
+
+	alertThenReturn()();
+	// alerts 'Message 1!' then alerts 'Message 2!'
+	
+---
+
+Callbacks
+	
+	A function that is passed as an argument into another function.
+	
+		function callAndAdd(n, callbackFunction) {
+		  return n + callbackFunction();
+		}
+
+		function returnsThree() {
+		  return 3;
+		}
+
+		let result = callAndAdd(2, returnsThree);
+
+		console.log(result);
+		// 5	
+	
+---
+
+Array methods
+
+	forEach()
+		allows to iterate through an array (similar to for loop)
+		
+		array.forEach(function callback(currentValue, index, array) {
+			// function code here
+		});
+		
+		OR
+		
+		[1, 5, 2, 4, 6, 3].forEach(function logIfOdd(n) {
+		  if (n % 2 !== 0) {
+			console.log(n);
+		  }
+		});
+
+		// 1
+		// 5
+		// 3
+	
+	map()
+		similar to above BUT returns a new array based on what's returned from the callback function
+		(and of course does not modify the original array!)
+		
+			const names = ['David', 'Richard', 'Veronika'];
+
+			const nameLengths = names.map(function(name) {
+			  return name.length;
+			});
+			
+			// So nameLengths will be a new array: [5, 7, 8].
+	
+	filter()
+		similar to map(), difference is the function passed to filter() is used as a test, 
+		and only items in array that pass the test are included in the new array.
+	
+			const shortNames = names.filter(function(name) {
+			  return name.length < 6;
+			});
+
+			console.log(shortNames);
+			// ['David']
+
+---
+
+Scope
+
+	where a variable can be seen (lexical scope)
+
+	block / function / runtime scope
+	
+	runtime scope describes what's available for use inside a given function:
+	
+		1. the function's arguments
+		2. local variables declared within the function
+		3. variables from its parent function's scope
+		4. global variables
+		
+			const myName = 'Andrew';
+			// Global variable
+
+			function introduceMyself() {
+
+			  const you = 'student';
+			  // Variable declared where introduce() is defined
+			  // (i.e., within introduce()'s parent function, introduceMyself())
+
+			  function introduce() {
+				console.log(`Hello, ${you}, I'm ${myName}!`);
+			  }
+
+			  return introduce();
+			}
+			
+	JavaScript is function scoped!
+	any variables defined inside a function are not available for use outside the function, 
+	though any variables defined within blocks (e.g. if or for) are available outside that block.
+
+---
+
+Scope chain
+
+	JS always first looks for variables within current function
+	if not found will continue looking up with scope chain until variable is resolved.
+	
+	if still not found at global scope, variable is undefined!
+	
+	child function -> parent function -> global environment
+	
+---
+
+Variable Shadowing
+
+	if there are any naming overlaps between variables in different contexts, 
+	they are resolved by moving through the scope chain from inner to outer scopes 
+	(i.e., local all the way to global)
+	
+	-> local variables with same name take precedence over those with a wider scope.
+		
+		const symbol = '¥';
+
+		function displayPrice(price) {
+		  const symbol = '$';
+		  console.log(symbol + price);
+		}
+
+		displayPrice('80');
+		// '$80'
+
+---
+
+Closure
+	process of a function retaining access to its scope
+	"the combination of a function and the lexical environment (scope chain of where declared) within which that function was declared."
+	
+	created every time a function is defined
+	particularly useful with nested functions
+	
+		const number = 3;
+
+		function myFunction () {
+		  const otherNumber = 1;
+
+		  function logger() {
+			console.log(otherNumber);
+		  }
+
+		  return logger;
+		}
+
+		const result = myFunction();
+
+		result();
+		// 1
+
+	otherNumber is "closed over" meaning it is available when "result()" is called
+	
+	applications:
+	
+		passing arguments implicitly
+		at function declaration, storing a snapshot of scope
+
+---
+
+garbage collection
+	how javascript manages memory, when data is no longer referable, it will be destroyed
+	to free up resources (computer memory)
+	
+	referenceable variables in JavaScript are not garbage collected!
+	
+		function myCounter() {
+		  let count = 0;
+
+		  return function () {
+			count += 1;
+			return count;
+		  };
+		}
+			
+	existence of the nested function keeps count variable from being garbage collected, therefore count remains available for future access
+
+---
+
+function declaration
+	defines a function, does not require a variable to be assigned to it
+	doesn't itself return a value
+	
+		function returnHello() {
+		  return 'Hello!';
+		}
+
+function expression
+	defines a function, does return a value
+	can be anonomous or named, are part of another expression's syntax
+	
+		// anonymous
+		const myFunction = function () {
+		  return 'Hello!';
+		};
+
+		// named
+		const myFunction = function returnHello() {
+		  return 'Hello!';
+		};
+	
+---
+
+IIFE = immediately-invoked function expression
+
+	(function sayHi(){
+		alert('Hi there!');
+	  }
+	)();
+
+	// alerts 'Hi there!'
+
+	OR
+	
+	(function (x, y){
+		console.log(x * y);
+	  }
+	)(2, 3);
+
+	// 6
+
+---
+
+private scope (private state)
+
+	const myFunction = (
+	  function () {
+		const hi = 'Hi!';
+		return function () {
+		  console.log(hi);
+		}
+	  }
+	)();
+
+	myFunction refers to an IIFE with a locally-defined variable, hi, 
+	and a returned function that closes over hi and prints its value to the console
+
+	IIFE's are very closely related to everything you've learned about scope and closures!
+
+alternative syntax
+
+	(function sayHi(){
+	   alert('Hi there!');
+	}());
+
+	// alerts 'Hi there!'
+	
+---
+
+seeing this all in action:
+
+	button.addEventListener('click', (function() {
+	  let count = 0;
+
+	  return function() {
+		count += 1;
+
+		if (count === 2) {
+		  alert('This alert appears every other press!');
+		  count = 0;
+		}
+	  };
+	})());
+
+enclose click data in event handler
+	no polluting of the global
+	with IIFE, can leverage closure to protect count variable from being accessed externally
+	prevents accidental mutations or unwanted side effects
+	
+the returned function closes over the count variable
+	-> private scope, protecting the data!
+
+---
+
+benefits of IIFEs
+
+	private scope -> privacy for variables within them
+	avoiding global variables
+	avoiding name collisions
+	good for one-time tasks e.g. initilaizing an app
+

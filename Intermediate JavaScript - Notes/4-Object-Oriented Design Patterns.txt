@@ -1,0 +1,411 @@
+
+Note: an Object is Prototype-linked to a Single Object
+
+---
+
+Mixins
+	allow us to extend properties and methods from multiple sources
+	a technique that provides useful functionality, but is not meant to be added to the prototype chain
+	
+---
+
+Object.assign()
+	adds to the target object by merging in the source object(s)
+	introduced with ES6 !!
+
+		let target = {};
+		let source = { number: 7 };
+
+		Object.assign(target, source);
+
+		console.log(target);
+		// { number: 7 }
+
+	does not create and return a new object
+	directly modifies then returns the same target object that was passed in
+	values of existing properties will be overwritten, while properties that don't exist in the source object will remain intact
+	
+		let target = { letter: 'a', number: 11 };
+		let source = { number: 7 };
+
+		Object.assign(target, source);
+
+		console.log(target);
+		// { letter: 'a', number: 7 }	
+	
+---
+
+multiple source objects
+
+		const duck = {
+		  hasBill: true
+		};
+		const beaver = {
+		  hasTail: true
+		};
+		const otter = {
+		  hasFur: true,
+		  feet: 'webbed'
+		};
+
+		const platypus = Object.assign({}, duck, beaver, otter);
+
+		console.log(platypus);
+		// { hasBill: true, hasTail: true, hasFur: true, feet: 'webbed' }
+
+	the target object is returned with all four properties
+
+	important to note that the platypus object is not prototype-linked to the three other objects!
+
+		platypus.constructor;
+		// Object()
+
+		platypus.isPrototypeOf(duck);
+		// false
+
+		duck.isPrototypeOf(platypus);
+		// false
+
+		platypus.isPrototypeOf(beaver);
+		// false
+
+		beaver.isPrototypeOf(duck);
+		// false
+
+		platypus.isPrototypeOf(otter);
+		// false
+
+		otter.isPrototypeOf(platypus);
+		// false
+
+	order is important!! later changes will override previous changes!
+
+---
+	
+factory functions
+	function that returns an object, but isn't itself a class or constructor
+	without new operator
+	
+		function Basketball(color) {
+		  return {
+			color: color,
+			numDots: 35000
+		  };
+		}
+		
+	note: object returned directly
+	
+		const orangeBasketball = Basketball('orange');
+
+		console.log(orangeBasketball);
+		// { color: 'orange', numDots: 35000 }
+		
+		const myBB = Basketball('blue and green');
+		const yourBB = Basketball('purple');
+		const bouncy = Basketball('neon pink');
+
+	allows us to compose a single object -- all without the use of the new operator
+
+	to compare with contructor function ->
+		factory function does not implicate prototypal inheritancece
+
+---
+
+functional mixins
+	cobining mixins and factory fucntions
+	a composable factory function that receives a _mixin_as an argument, 
+	copies properties and methods from that mixin, and returns a new object
+
+		function CoffeeMaker(object) {
+		  let needsRefill = false;
+
+		  return Object.assign({}, object, {
+			pourAll: function () {
+			  needsRefill = true;
+			},
+			isEmpty: function () {
+			  return needsRefill;
+			}
+		  });
+		}
+
+	const mixedCoffeeMaker = CoffeeMaker({ style: 'percolator' });
+
+		console.log(mixedCoffeeMaker) ->
+		{
+		  style: 'percolator',
+		  pourAll: function () {
+			needsRefill = true;
+		  },
+		  isEmpty: function () {
+			return needsRefill;
+		  }
+		}
+
+	they are composable; we can use them as individual pieces of code that add specific properties like an assembly line
+
+---
+
+Private Properties: Literal
+
+	let developer = {
+	  name: 'Veronika',
+	  getName: function () {
+		return this.name;
+	  }
+	};
+
+	developer.getName();
+	// 'Veronika'
+	developer.name;
+	// 'Veronika'
+	developer.name = 'Not Veronika';
+	developer.getName();
+	// 'Not Veronika'
+	developer.name;
+	// 'Not Veronika'
+
+	this sort of open access makes developers uncomfortable. Since we can directly access and mutate an object's properties
+	
+---
+
+underscores are added to object props and methods to show privacy (not enforced in the code, only a convention)
+
+---
+
+Private Properties: Function
+
+	function instantiateDeveloper() {
+	  return {
+		name: 'Veronika',
+		getName: function () {
+		  return this.name;
+		}
+	  };
+	}
+
+	let developer = instantiateDeveloper();
+
+	developer.getName;
+	// 'Veronika'
+	developer.name;
+	// 'Veronika'
+
+	developer.name = 'Not Veronika';
+
+	developer.name;
+	// 'Not Veronika'
+
+	also not effective at keeping the object's props private
+
+---
+
+there is no special syntax or keyword we can use to protect certain properties from being accessed
+
+however scope and closures to create a private state gives us hope
+
+	function myCounter() {
+	  let count = 0;
+
+	  return function () {
+		count += 1;
+		return count;
+	  };
+	}
+
+	let counter = myCounter();
+
+	counter(); // 1
+
+	counter(); // 2
+
+and no way that you can access count directly
+
+	counter.count; // undefined
+
+	count; // undefined
+
+closure provides a way to create private data
+
+---
+
+Recall that IIFE's are great for creating private state - the variables are inaccessible from the outside world
+
+	let sodiumChloride = (function(){
+	  let chemicalFormula = 'NaCl';
+	  let molarMass = 58.44;
+
+	  return {
+		getProperties: function(){
+		  console.log(`Formula: ${chemicalFormula}`);
+		  console.log(`Molar Mass: ${molarMass} g/mol`);
+		}
+	  };
+	})();
+
+	sodiumChloride.getProperties();
+	// the two stings from the getProperties function are returned.
+
+---
+
+the module pattern
+leveraging scope, closures and IIFEs together
+
+	let diana = (function () {
+	  let secretIdentity = 'Diana Prince';
+
+	  return {
+		introduce: function () {
+		  console.log(`Hi! I am ${secretIdentity}`);
+		}
+	  };
+	})();
+
+access to secretIdentity variable is protected
+	console.log(diana.secretIdentity); // undefined
+
+public interace to interact with secretIdentity
+	diana.introduce(); // 'Hi! I am Diana Prince'
+
+---
+
+module pattern:
+
+	used to create private properties in JavaScript
+
+other benefits:
+
+	organization -> Modules are a larger unit of organization than, say, functions or objects 
+	this helps partition code and provide structure as an application scales
+
+---
+
+the revealing module pattern
+	variation, but all data and functions are private
+	only ones developer chooses are public
+	
+	let myModule = (function (){
+	  function privateMethod (message) {
+		console.log(message);
+	  }
+
+	  function publicMethod (message) {
+		privateMethod(message);
+	  }
+
+	  return {
+		publicMethod: publicMethod
+	  };
+	})();	
+
+revealed properties are in the return statement
+
+---
+
+more complpex example
+
+	let person = (function () {
+	  let privateAge = 0;
+	  let privateName = 'Andrew';
+
+	  function privateAgeOneYear() {
+		privateAge += 1;
+		console.log(`One year has passed! Current age is ${privateAge}`);
+	  }
+
+	  function displayName() {
+		console.log(`Name: ${privateName}`);
+	  }
+
+	  function ageOneYear() {
+		privateAgeOneYear();
+	  }
+
+	  return {
+		name: displayName,
+		age: ageOneYear
+	  };
+	})();
+
+private date = privateAge, privateName + privateAgeOneYear()
+
+returned object is stored in person and provides public interface through which we can access this data!
+
+	console.log(person.name()); // 'My name is Andrew'
+
+	person.privateName = 'Richard';
+		would add new variable, not update existing on in function!!
+
+	console.log(person.name()); // 'My name is Andrew'
+
+	console.log(person.displayName()); // undefined
+
+	console.log(person.age()); // 'One year has passed! Current age is 1'
+
+	console.log(person.age()); // ''One year has passed! Current age is 2'
+
+---
+
+benefits of revealing module pattern
+	clarity at the end of the module
+		modules may grow large, and this eases readability for other developers
+	lends itself to consistent syntax
+	
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

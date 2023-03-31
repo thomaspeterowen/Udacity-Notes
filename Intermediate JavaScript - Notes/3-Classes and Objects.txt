@@ -1,0 +1,389 @@
+
+Objects can have properties to represent attributes or characteristics
+as well as methods to represent actions that can be performed
+
+---
+
+constructor functions
+	foundation of object-oriented javascript
+	
+	
+to instantiate (create) a new object
+
+	new SoftwareDeveloper();
+
+	using new keyword and starting with capital letter (camel case)
+
+	function SoftwareDeveloper() {
+		this.favoriteLanguage = 'JavaScript';
+	}
+
+	'this' allows to persist data
+	
+	above function will add favoriteLanguage prop + value to any oject that it creates
+	
+	note: no return statement/value
+	
+	let developer = new SoftwareDeveloper();
+
+	console.log(developer)
+	
+	// SoftwareDeveloper object logged to console
+	
+---
+
+we can even use the same constructor function to create as many objects as we'd like
+
+	let engineer = new SoftwareDeveloper();
+	let programmer = new SoftwareDeveloper();
+
+	console.log(engineer);
+	// SoftwareDeveloper { favoriteLanguage: 'JavaScript' }
+
+	console.log(programmer);
+	// SoftwareDeveloper { favoriteLanguage: 'JavaScript' }
+
+can also have parameters
+
+	function SoftwareDeveloper(name) {
+	  this.favoriteLanguage = 'JavaScript';
+	  this.name = name;
+	}	
+
+	let instructor = new SoftwareDeveloper('Andrew');
+	console.log(instructor);
+	// SoftwareDeveloper { favoriteLanguage: 'JavaScript', name: 'Andrew' }
+
+	let teacher = new SoftwareDeveloper('Richard');
+	console.log(teacher);
+	// SoftwareDeveloper { favoriteLanguage: 'JavaScript', name: 'Richard' }
+
+---
+
+if you omit the 'new' operator, no object will be created
+function will be invoked like any other regular function...
+
+---
+
+in console can use the following commands
+
+	typeof ___ -> returns type
+	
+	___ instanceof Developer -> true or false 
+
+---
+
+when invoking a constructor function with 'new' operator, this gets set to the newly-created object
+
+the value assigned to this is based on the object that invokes the method where this is defined
+
+	const dog = {
+	  bark: function () {
+		console.log('Woof!');
+	  },
+	  barkTwice: function () {
+		this.bark();
+		this.bark();
+	  }
+	};
+
+	dog.bark();
+	// Woof!
+
+	dog.barkTwice();
+	// Woof!
+	// Woof!
+
+---
+
+there are four ways to call a function, each way sets 'this' differently:
+
+1) calling a constructor function with the new keyword: this -> a newly-created object
+
+2) calling a function that belongs to an object (i.e., a method): this -> the object itself
+
+3) calling a function on its own (simply invoking a regular function): this -> window
+
+4) calling a function and setting this ourselves: explained below...
+
+---
+
+settin our own this:
+
+call()
+	this is set to be the first argument, then other normal arguments are passed after
+
+	function multiply(n1, n2) {
+	  return n1 * n2;
+	}	
+
+	multiply(3, 4);
+	// 12
+
+	multiply.call(window, 3, 4);
+	// 12
+
+	---
+	
+	const mockingbird = {
+	  title: 'To Kill a Mockingbird',
+	  describe: function () {
+		console.log(`${this.title} is a classic novel`);
+	  }
+	};	
+
+	mockingbird.describe();
+	// 'To Kill a Mockingbird is a classic novel'
+
+	const pride = {
+	  title: 'Pride and Prejudice'
+	};
+
+	mockingbird.describe.call(pride);
+	// 'Pride and Prejudice is a classic novel'
+
+apply()
+	similar but with array for inputs
+	
+	function multiply(n1, n2) {
+	  return n1 * n2;
+	}
+
+	multiply.call(window, 3, 4);
+	// 12
+
+	multiply.apply(window, [3, 4]);
+	// 12
+
+	mockingbird.describe.apply(pride);
+	// 'Pride and Prejudice is a classic novel'
+
+---
+
+callbacks and this
+	scope issues when using callback functions
+	
+		function invokeTwice(cb) {
+		   cb();
+		   cb();
+		}
+
+		const dog = {
+		  age: 5,
+		  growOneYear: function () {
+			this.age += 1;
+		  }
+		};
+
+		dog.growOneYear();
+		dog.age; 
+		// 6
+
+		invokeTwice(dog.growOneYear);
+		dog.age;
+		// 6
+
+	dog.age is not changes, as within invokeTwice, dog.growOneYear is invoked as a function and not as a method!
+	when invoked as a function, this is the global object (as we learned earlier)
+	
+	how to make sure 'this' is preserved as wanted?
+	use an anonymous closure over the dog:
+	
+		invokeTwice(function () { 
+		  dog.growOneYear(); 
+		});
+
+		dog.age;
+		// 7
+		
+	invoking invokeTwice() still sets the value of this to window
+	however, this has no effect on the closure. 
+	within the anon function, growOneYear() method will still be directly called onto the dog object! 
+
+	this process is made less verbose by using bind() !!
+	
+---	
+	
+bind()
+	returns a new function that when called has this set to the value we give it
+			
+		function invokeTwice(cb) {
+		   cb();
+		   cb();
+		}
+
+		const dog = {
+		  age: 5,
+		  growOneYear: function () {
+			this.age += 1;
+		  }
+		};
+
+		const myGrow = dog.growOneYear.bind(dog);
+		
+		invokeTwice(myGrow);
+
+		dog.age;
+		// 7
+
+---
+
+ You've seen how just about everything in JavaScript is an object!
+
+---
+
+Prototypal Inheritance
+
+each function has a prototype property, which is really just an object
+when this function is invoked as a constructor using 'new' it creates and returns a new object
+this object is secretly linked to its constructor's prototype, and this secret link allows the 
+object to access the prototype's properties and methods as if it were its own!
+
+we know that the prototype property just points to a regular object, 
+that object itself also has a secret link to its prototype
+and that prototype object also has reference to its own prototype etc...
+-> this is how the prototype chain is formed.
+
+	// without prototype
+	function Dalmatian (name) {
+	  this.name = name;
+
+	  this.bark = function() {
+		console.log(`${this.name} barks!`);
+	  };
+	}
+
+	// using prototype
+	function Dalmatian (name) {
+	  this.name = name;
+	}
+
+	Dalmatian.prototype.bark = function() {
+	  console.log(`${this.name} barks!`);
+	};
+
+adding methods to the prototype saves memory!!
+
+---
+
+when you log an array to the console, you can also see the prototype __proto__
+this shows the properties available of this array/object e.g. map()
+these are ofter inherited from the array prototype!
+
+---
+
+checking an objects properties
+
+	hasOwnProperty()
+		to find the origin of a particular property
+		
+		function Phone() {
+		  this.operatingSystem = 'Android';
+		}
+
+		Phone.prototype.screenSize = 6;
+
+		const myPhone = new Phone();
+
+		console.log(myPhone.hasOwnProperty('operatingSystem'));
+		// true
+
+		console.log(myPhone.hasOwnProperty('screenSize'));
+		// false
+
+	isPrototypeOf()
+		checks whether or not an object exists in another object's prototype chain
+
+		const rodent = {
+		  favoriteFood: 'cheese',
+		  hasTail: true
+		};
+
+		function Mouse() {
+		  this.favoriteFood = 'cheese';
+		}
+
+		Mouse.prototype = rodent;
+
+		const ralph = new Mouse();
+
+		console.log(rodent.isPrototypeOf(ralph));
+		// true
+
+	Object.getPrototypeOf()
+		when you're not sure what a certain object's prototype is
+
+		const myPrototype = Object.getPrototypeOf(ralph);
+
+		console.log(myPrototype);
+		// { favoriteFood: 'cheese', hasTail: true }
+
+---
+
+constructor property
+	assigned each time an object is created
+	
+		function Longboard() {
+		  this.material = 'bamboo';
+		}
+
+		const board = new Longboard();
+
+		console.log(board.constructor);
+
+		// function Longboard() {
+		//   this.material = 'bamboo';
+		// }
+
+	if an object was created using literal notation, its constructor is the built-in Object() constructor function!
+	
+		const rodent = {
+		  favoriteFood: 'cheese',
+		  hasTail: true
+		};
+
+		console.log(rodent.constructor);
+		// function Object() { [native code] }
+
+	Inheritance in JavaScript is when an object is based on another object. 
+	Inheritance allows us to reuse existing code, having objects take on properties of other objects.
+
+---
+
+__proto__
+	is a property of all objects (i.e., instances) made by a constructor function, 
+	and points directly to that constructor's prototype object
+
+	can be used to show secret (hidden) properties
+	
+		console.log(snowball.__proto__);
+		// { claws: true, diet: 'carnivore' }	
+
+---
+
+Object.create()
+
+	const mammal = {
+	  vertebrate: true,
+	  earBones: 3
+	};
+
+	const rabbit = Object.create(mammal);
+
+	console.log(rabbit);
+	// {}
+
+
+	console.log(rabbit.__proto__ === mammal);
+	// true
+
+	console.log(rabbit.vertebrate);
+	// true
+
+	console.log(rabbit.earBones);
+	// 3
+
+	-> returns a new object whose __proto__ prop is set to the object passed into Object.create()
+	Object.create() gives us a clean method of establishing prototypal inheritance in JavaScript.
+	We can easily extend the prototype chain this way, and we can have objects inherit from just about any object we want!
+---
