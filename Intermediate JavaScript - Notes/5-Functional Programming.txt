@@ -1,0 +1,988 @@
+
+Functional Programming (FP) for JavaScript
+
+Functional programming - a programming paradigm (style of programming) that keeps the processing within functions. 
+simple, efficient (few rules) making large programmes more reliable/predictable
+
+based on Lambda Calculus - a mathematical idea that any computation - any program - can be expressed as a function or set of functions.
+
+---
+
+PARADIGMS are styles (philosophies/styles) of programming that are tried and true at helping you write clean, readable, and effective programs!
+
+Most programming paradigms differ in how they deal with state
+
+Paradigm Example 1:
+	Imperative -> solves problems with an explicit sequence of commands to get from point A to point B
+	code or comments read like a recipe
+	
+		let name = 'Captain Kirk'
+		let hour = new Date().getHours()
+
+		let greeting = ''
+
+		if (hour <= 6) {
+			greeting = 'Good Morning, '
+		} else if (hour >= 17) {
+			greeting = 'Good Evening, '
+		} else {
+			greeting = 'Hello, '
+		}
+
+		greeting += name + '.'
+
+		console.log(greeting)  
+		//expected output: Hello, Captain Kirk	
+	
+Paradigm Example 2:
+	Functional ->  of logic and can be chained together to accomplish more complex actions
+
+		const greet = (name) => (salutation) => `${salutation}, ${name}.`
+
+		const determineSalutation = (callback) => {
+			const hour = new Date().getHours()
+
+			if (hour <= 6) {
+				return callback('Good Morning')
+			} else if (hour >= 17) {
+				return callback('Good Evening')
+			} else {
+				return callback('Hello')
+			}
+		}
+
+		let result = determineSalutation(greet('Captain Kirk')) 
+		console.log(result)
+		//expected output: Hello, Captain Kirk
+
+Paradigm Example 3:
+	Object Oriented -> defining objects that can hold both values (properties) and functionality (methods)
+	
+		class Person {
+			constructor(name){
+				this.name = name
+			}
+
+			determineSalutation(date){
+				const hour = (date && date.getHours()) || new Date().getHours()
+
+				if (hour <= 6) {
+					return "Good Morning"
+				} else if (hour >= 17) {
+					return "Good Evening"
+				} else {
+					return "Hello"
+				}
+			}
+
+			greet() {
+				return `${this.determineSalutation()}\u00A0${this.name}`
+				// using JavaScript template literal: `${}`
+				// \u00A0 is a symbol to add a space in the template literal
+			}
+		}
+
+		const kirk = new Person("Kirk", "Captain")
+		console.log(kirk.greet())
+		//expected output: Hello, Captain Kirk	
+	
+---
+
+JavaScript, more than most other programming languages, can be used to write in the paradigm and style of the authors’ choosing. 
+
+It is a shape-shifting language, which can be both a wonderful freedom and source of chaos for JavaScript developers.
+
+---
+
+Foundations of FP:
+
+Pure functions
+	simple concept with big implications -> functions that, given the same input, will always return the same output and does not have any observable side effect.
+	
+	"Same inputs get the same output and the return value is the total effect of running the function."
+
+	side effect = any effect of running a function that is not part of the return statement (e.g. when a function changes the programme without encapsulating that in the return value)
+	might seem harmless, but can create problems as programmes grow...
+	
+	Example (updating the galaxy_ship.torpedo_balance)
+
+		let galaxy_ship = {
+			torpedo_balance: 0,
+			id: 123456,
+		}
+
+		function stock_arsenal(amount, id) {
+			if (galaxy_ship.id === id) {
+			  // SIDE EFFECT
+			  // Galaxy_ship’s values are being updated, but it is not a part of the return of this function
+			  galaxy_ship.torpedo_balance += amount 
+			  
+			  console.log('arsenal successfully stocked')
+			  console.log(galaxy_ship.torpedo_balance)
+			  
+			  // return value is just a message
+			  return 'arsenal successfully stocked'
+			}
+
+			console.log(`invalid account id`)
+			return `invalid account id`
+		}
+
+		stock_arsenal(40, 123456)
+		// expected output: 
+		// arsenal successfully stocked
+		// 40
+
+	using pure functions -> more confidence working with the code
+
+Immutability
+	values which, once declared, cannot be changed
+	we do not “edit” things -> we make new things.
+	(why we favour const over let...)
+	
+---
+
+Pros
+	easier to test (automated scripts to test functions)
+	more predictable code
+	easier to edit and expand (functions return the same value every time, and perfectly encapsulate their logic in the return statement)
+	
+Cons
+	more difficult to write in some languages
+	will never be able to implement completely (unless using e.g. Haskell...)
+	few libraries to speed progress (though this is changing)
+	
+---
+
+Pure function examples:
+
+	// -----------------------------------------------------------------
+	// Exercise 1
+	// Directions: Write a pure function that prints "good afternoon" if
+	//       its afternoon and "good morning" any other time of the day.
+	// Hint - this will help with time of day: new Date().getHours()
+	// -----------------------------------------------------------------
+
+	const greet = () => {
+	  const timeOfDay = new Date().getHours();
+	  if (timeOfDay <= 12) {
+		return "good morning";
+	  } else {
+		return "good afternoon";
+	  }
+	};
+
+	console.log(greet());
+
+	// -----------------------------------------------------------------
+	// Exercise 2
+	// Directions: Write a pure function that takes in a number and
+	//       returns an array of items counting down from that number to
+	//       zero.
+	// -----------------------------------------------------------------
+
+	const countdown = (input) => {
+	  let output = new Array();
+
+	  for (let i = input; i >= 0; i--) {
+		output.push(i);
+	  }
+	  return output;
+	};
+
+	let input = 12;
+
+	console.log(countdown(input));
+
+---
+
+FP in real life: Haskell, Lisp, Scheme, Clojure, Elm, Erlang and F#.
+	
+FP ideas also in React and Redux!!
+
+--
+
+JavaScript is an object-oriented programming language!!
+
+Working with arrays in a functional way:
+	For loops are not functional, becuase they update a variable, rely on side effects and are not functions...
+
+	MAP
+		performs action on each element, returns new array, functional!
+		
+		Simple example:
+			const captains = ['Picard', 'Adama', 'Reynolds', 'Beeblebrox']
+
+			// create new array
+			const titles = captains.map(cap => `Captain ${cap}`)
+
+			// equivalent to
+			const titles = captains.map(cap => {
+				return `Captain ${cap}`
+			})
+
+			console.log('Resulting Array: ', titles)
+			// expected output: Resulting Array: ['Captain Picard', 'Captain Adama', 'Captain Reynolds', 'Captain Beeblebrox']
+			console.log('Original Array:', captains)
+			// is unchanged, expected output: Original Array: ['Picard', 'Adama', 'Reynolds', 'Beeblebrox']		
+
+		Example with callback:
+			const nums = [1, 2, 3, 4, 5]
+
+			// Internal callback
+			// ----------------------------------------------------------------------
+			const doubles = nums.map(x => x * 2)
+
+			console.log(doubles)
+			// expected output: Array [2, 4, 6, 8, 10]
+
+			// External callback
+			// ----------------------------------------------------------------------
+			const doubler = function(x) {
+				return x * 2
+			}
+
+			const doubles2 = nums.map(x => {
+				return doubler
+			})
+
+			console.log(doubles2)
+			// expected output: Array [2, 4, 6, 8, 10]
+
+		Exercises:
+			// 1. Write a map function to reverse this array:
+			const start = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+			const end = start.map(x => abs(x - 11))
+			console.log(end)
+			// expected output: Array [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+
+			// ----------------------------------------------------------
+			// 2. Write a map function to print the Job: Name:
+			const shipMates = [["Mal", "Captain"], ["Wash", "Pilot"], ["Zoey", "1st Mate"], ["Jayne", "Public Relations"]]
+
+			const result = shipMates.map(arr => arr.reverse().join(': '))
+			console.log(result)
+
+			// expected output: Array ["Captain: Mal", etc...]
+
+			// ----------------------------------------------------------
+			// 3. Write a map function that prints the name: even|odd
+			const awayTeam = ["Picard", "Riker", "Troy", "Data"]
+
+			const result = awayTeam.map((name, i) => `${name}: ${i % 2 === 0 ? 'even' : 'odd'}`)
+			console.log(result)
+			// expected output: Array: ["Picard: even", "Riker: odd", etc...]
+
+
+			// ----------------------------------------------------------
+			3. Create a multidimensional array of each item and its index in the original Array
+
+			const sciFiShows = ['Manedlorian', 'Enterprise', 'Firefly', 'Battlestar Galactica']
+
+			const result = sciFiShows.map((show, index) => [show, index])
+			console.log(result)
+			// expected output: Array [['Manedlorian', 0], ['Enterprise', 1], ['Firefly', 2], ['Battlestar Galactica', 3]]
+
+			// ----------------------------------------------------------
+			// 4. For each item in this array, create a multidimensional array containing the entire original array
+
+			const numbers = [1, 2, 3, 4]
+
+			const result = numbers.map((num, index, wholeArray) => wholeArray)
+			console.log(result)
+			// expected output: Array [[1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4]]
+
+		Advanced example:
+			var index = [
+				{key: 1, sector: 10, t_score: 18, id: '1236n7e8', value: 'Klingon'},
+				{key: 4, sector: 145, t_score: 12, id: '293847hs8', value: 'Minbari'},
+				{key: 8, sector: 214, t_score: 5, id: '283hy8347', value: 'Cylon'},
+				{key: 3, sector: 8346, t_score: 10, id: 'n9837ks857', value: 'Jawa'},
+			]
+
+			const result = index.map((race) => {
+				return { name: race.value, idFirstThree: race.id.substring(0,3)}
+			})
+
+	FILTER
+		the ONLY difference between filter and map is map performs a function on every item in an array, 
+		and filter uses a true or false conditional on every item to decide if that value should be kept or discarded
+		
+		Example:
+			const values = ['true', true, 'yes', 'no', 1, 0, 'false', false];
+
+			const result = values.filter(v => v == true);
+
+			console.log(result);
+			// expected output: Array [true, 1]
+
+		Exercises:
+			// 1. Find all the words with more than 7 characters
+			const words = ['tardis', 'grok', 'frak', 'blaster', 'klingon', 'shepherd']
+
+			const result1 = words.filter(value => value.length > 7);
+			console.log(result1);
+			// expected output: Array ['shepherd']
+
+			// ----------------------------------------------------------
+			// 2. Find all even values
+			const nums = [12, 13, 14, 15, 16, 17]
+
+			const result2 = nums.filter(value => value%2 === 0);
+			console.log(result2);
+			// expected output: Array [12, 14, 16]
+
+			// ----------------------------------------------------------
+			// REAL LIFE EXAMPLE
+			// We often use filter to quickly pull all the items that share a status or other characteristic. For instance, create a list of all the active bounty hunters from the array below:
+
+			const hunters = [
+				{
+					name: 'Greedo',
+					universe: 'Star Wars',
+					status: 'active',
+				},
+				{
+					name: 'Boba Fett',
+					universe: 'Star Wars',
+					status: 'inactive',
+				},
+				{
+					name: 'Asajj Ventress',
+					universe: 'Star Wars',
+					status: 'unknown',
+				},
+				{
+					name: 'Zam Wesell',
+					universe: 'Star Wars',
+					status: 'inactive',
+				},
+				{
+					name: 'Jango Fett',
+					universe: 'Star Wars',
+					status: 'active',
+				},
+			]
+
+			const result = hunters.filter(hunter => hunter.status === 'active');
+			console.log(result);
+
+			// expected output: Array [
+			//     {
+			//         name: 'Greedo',
+			//         universe: 'Star Wars',
+			//         status: 'active',
+			//     },
+			//     {
+			//         name: 'Jango Fett',
+			//         universe: 'Star Wars',
+			//         status: 'active',
+			//     },
+			// ]
+
+	REDUCE
+		boils our array down to a single value
+
+		Examples:
+		
+			const sales = [120.00, 19.99, 3.50, 4.00];
+
+			const total = sales.reduce((runningTotal, currentValue) => {
+				console.log(runningTotal, currentValue)
+				return runningTotal + currentValue
+			})
+
+			// cycle 1: 120 19.99
+			// cycle 2: 139.99 3.5
+			// cycle 3: 143.49 4
+
+			// expected output: 147.49
+
+			// If you can follow the code above - great job! No one masters the reduce method overnight, but being able to follow the code is the first step. Below are two examples of alternate syntax that you might also see out in the wild. Can you follow these?
+
+			//  SAME AS:
+			const reducer = (runningTotal, currentValue) => runningTotal + currentValue;
+			console.log(sales.reduce(reducer));
+
+			// Look! You can even run map, filter, and reduce on array literals!
+			// SAME AS:
+			[120.00, 19.99, 3.50, 4.00].reduce((runningTotal, currentValue) => {
+				return runningTotal + currentValue
+			})		
+
+		Exercises:
+			// 1. Take this disjointed sentence and turn it into a single string
+			const text = ['The ships', 'hung in the sky,', 'much the way', 'that bricks don`t']
+
+			const reducer = (sentence, phrase) => sentence + ' ' + phrase;
+			console.log(text.reduce(reducer));
+
+			// expected output: "The ships hung in the sky, much the way that bricks don't"
+
+			// Explanation: In the reducer function above, ‘sentence’ is the accumulator variable, and is updated at each iteration of the reduce method. The ‘phrase’ argument refers to an item in the array. In this simple example, we take each string in the array and append it to the accumulator to create the full quote. 
+
+			// ----------------------------------------------------------
+
+			// 2. Return the winning team
+			const scores = [
+				{
+					team: 'A',
+					score: 20
+				},
+				{
+					team: 'B',
+					score: 17
+				},
+				{
+					team: 'C',
+					score: 23
+				},
+				{
+					team: 'D',
+					score: 13
+				}
+			]
+
+			const high = scores.reduce((highValue, currentValue) => {
+			   if (currentValue.score > highValue.score)
+				 return currentValue;
+			   else
+				 return highValue;
+			})
+
+			console.log(high.team)
+			// expected output: "C"
+
+			// Explanation: In this example, highValue is the accumulator, and currentValue refers to an item in the array. This is a slightly more complicated example than the first exercise because we want to conditionally decide whether to update the accumulator or not. In this case, we only want to keep a running tally of the highest score, discarding any value unless it beats the accumulated high score. 
+
+			// ----------------------------------------------------------
+			//    REAL LIFE EXAMPLE
+			// Reduce can sometimes save us a lot of time -- if we remember to use it.
+			// Instead of writing a complicated map or filter method and then calling the
+			// name of the ship out of the returned array, Return the name of the fastest
+			// star ship
+
+			const ships = [
+				{
+					name: 'Serenity',
+					speed: '4.2G',
+				},
+				{
+					name: 'Cylon Raider',
+					speed: '7.5G',
+				},
+				{
+					name: 'Swordfish II',
+					speed: '50G',
+				},
+				{
+					name: 'Tie Fighters',
+					speed: '4100G',
+				}
+			]
+
+			const result = ships.reduce((previous, current) => {
+				const speed = parseInt(current.speed.slice(0, -1))
+				const previousSpeed = parseInt(previous.speed.slice(0, -1))
+				if (speed > previousSpeed) {
+					return current
+				}
+				return previous
+			})
+
+			console.log(result.name)
+			// Expected output: Tie Fighters		
+
+---
+
+Array Methods for Selection
+
+	flat
+		to undo array nesting to exactly the level you want
+		
+		var nestedArr = [1, 2, [3, 4, [5, 6]]];
+		nestedArr.flat();
+		console.log(nestedArr)
+		// expected output: [1, 2, 3, 4, [5, 6]]
+
+		var moreNested = [1, 2, [3, 4, [5, 6]]];
+		moreNested.flat(2);
+		console.log(moreNested)
+		// expected output: [1, 2, 3, 4, 5, 6]
+
+	find
+		it only passes a single argument (the current value) 
+		and returns a single value from the array (the first one to pass the function’s test)
+
+		const bestBars = [
+			'Mos Eisley Cantina',
+			'Clark`s Bar',
+			'10 Forward',
+			'The Restaurant at the End of the Universe',
+			'The Prancing Pony',
+			'10 Forward',
+		]
+
+		const test1 = bestBars.find(x => x === 'Quark`s Bar')
+		const test2 = bestBars.find(x => x === '10 Forward')
+
+		console.log(test1) //expected output: undefined
+		console.log(test2) // expected output: 10 Forward
+
+	includes
+		most useful when are looking for the existence of a specific value
+		will return true if it finds it and false if it does not
+		
+		obviously find and includes are not good if you want to know how many times a value is found...
+		for this better would be map or filter
+		
+		const test1 = bestBars.includes('Quark`s Bar')
+		const test2 = bestBars.includes('The Prancing Pony')
+
+		console.log(test1) // expected output: false
+		console.log(test2) // expected output: true		
+
+	Exercises:
+	
+		// ----------------------------------------------------------
+		// FLAT EXERCISES
+		// ----------------------------------------------------------
+		// This short list of some marvel characters is arbitrarily nested. Experiment with the effect of flattening to various depths.
+
+		const characters = [
+			['Starlord', 'Gamora', 'Groot'],
+			['Dr. Strange', ['Captain America', 'Bucky Barnes'], ['Thor', 'Hulk', ['Loki']], 'Thanos']
+			['Iron Man', 'Ultron'],
+			['Spider Man', ['Venom']],
+			['Professor X', 'Wolverine', 'Quicksilver', ['Magneto']]
+		]
+
+		const results = characters.flat()
+		console.log(results)
+
+		// ----------------------------------------------------------
+		// Best use cases for FIND are when you want to cast a wider net, because you get to create your own criteria that can be either very specific or more generic.
+		// 1. Determine whether any of the following have a value that contains the characters 'ABC'
+
+		const ids = [
+			'ADHKE',
+			'ANFKM',
+			'QIMVU',
+			'PQMFU',
+			'ABCKO',
+			'IUABC'
+		]
+
+		const abc = ids.find(x => x.includes('ABC'))
+		console.log(abc) // expected output: ABCKO
+		// IUABC also includes 'ABC' but the find method won't change the output for any additional occurances of finding 'ABC'.
+
+
+		// ----------------------------------------------------------
+		// 2. It is best to use INCLUDES when the value itself does not matter, simply its presence. Imagine the scenario that you need to check a user's id against a list of admin id's.
+
+		const currentUserId = '29nv283bfc0szn16723'
+
+		const admins = [
+			'02398cn7syap0dmbnv0',
+			'2389sakvjhw8e7f09fv',
+			'09mxvb82kzjd6v1sfdg',
+			'9a76zxmsdnv1u622345',
+			'29nv283bfc0szn16723',
+			'029834zmnv9jhgfu2ab',
+			'12mnz09v87bas78fb12',
+			'098Xc8x76m3nb4aposi'
+		]
+
+		const result = admins.includes(currentUserId)
+		console.log(result)
+
+		// ----------------------------------------------------------
+		// 3. Checking between lists. Another thing that you might need to do in real life is check items between two arrays. Create a new array C containing any common values between A and B. This becomes especially helpful when the values are hard to distinguish visually
+
+		const A = [
+			'02398cn7syap0dmbnv0',
+			'2389sakvjhw8e7f09fv',
+			'09mxvb82kzjd6v1sfdg',
+			'9a76zxmsdnv1u622345',
+			'29nv283bfc0szn16723',
+			'029834zmnv9jhgfu2ab',
+			'12mnz09v87bas78fb12',
+			'098Xc8x76m3nb4aposi'
+		]
+
+		const B = [
+			'13xnse8aanv87Hdnfv8',
+			'2389sakvjhw8e7f09fv',
+			'12mn0vnZkadfh237LPd',
+			'1209MNBd8723nvkwejs',
+			'298374naskdj273ubsl',
+			'098LKJnsvijevkwejf6'
+		]
+
+		// Solution:
+		// There are many potential solutions to this problem, but here is one example
+
+		const C = A.filter(item => {
+		   console.log(B.includes(item))
+		   return B.includes(item)
+			
+		})
+
+		console.log(C)	
+
+---
+
+Variables
+
+	var -> pre ES6, values can be updated, it is hoisted and not block scoped
+	
+	let -> new with ES6, values can be updated, not hoisted and is block scoped
+	
+	const -> new with ES6, cannot be changed, with some exceptions... preferred for FP !!
+	
+JavaScript is not strictly a Functional programming language, we do not have a perfect way to ensure no variable values are mutated, 
+but const is the best we can do … for now.
+	
+---
+
+ES6 Object Methods & Freeze
+
+	Freeze example: 
+		const currentShow = {
+			title: 'Dr. Who',
+			seasons: 11,
+			currentSeason: 4
+		}
+
+		// as a const, we can do this:
+		currentShow.currentSeason = 5
+		// expected output: { title: 'Dr. Who', seasons: 11, currentSeasons: 5 }
+
+		// but if we freeze the object
+		Object.freeze(currentShow);
+
+		currentShow.currentSeason = 6;
+		// this would actually cause an error
+
+		console.log(currentShow)
+		// expected output: {title: 'Dr. Who', seasons: 11, currentSeasons: 5 }
+		// now that it is frozen we can not update the current season of the current show
+
+	Freze is one way to ensure that objects cannot be changed:
+		A frozen object can no longer be changed. A frozen object can have no properties added to it, removed from it, or its values edited. It effectively makes an immutable object.
+
+	Keys
+		returns an array of strings of all an object’s property names
+		
+		Example:
+			const character = {
+				id: '12mn18udcbv9823',
+				name: 'Chewbacca',
+				race: 'Wookie',
+				planet: 'Kashyyyk',
+				job: 'First Mate'
+			};
+
+			console.log(Object.keys(character));
+			// expected output: Array ["id","name","race","planet","job"]
+
+	Assign
+		copies the properties from a source object to a target object
+		All properties in the source object that aren’t in the target will be created on the target, and any property both objects share, the values will be updated to match the source object
+
+		Example: 
+			let state = {
+				name: 'Wash',
+				ship: {
+					name: 'Serenity',
+					class: 'Firefly'
+				}
+				role: 'Pilot',
+				favoriteThing: { 
+					item: "Toy", 
+					details: {
+							type: 'Toy Tyrannosaurus Rex'
+					}
+				}
+			}
+
+			const newState = {
+				name: 'Mal',
+				role: 'Captain',
+				favoriteThing: {
+					item: "Not complicated"
+				},
+				history: ["Browncoat sergeant"]
+			}
+
+			state = Object.assign(state, newState);
+			// Object.assign(state, newState)
+
+			console.log(state)
+			// expected output:
+			// { name: 'Mal',  ship: { name: 'Serenity', class: 'Firefly' },
+			//  role: 'Captain',
+			//  favoriteThing: { item: 'Not complicated' },
+			//  history: [ 'Browncoat sergeant' ] }
+
+	Exercise examples:
+	
+		const characters = [
+		  {
+			name: 'Marvin the Paranoid Android',
+			role: 'First Mate',
+			universe: 'Hitchhikers Guide to the Galaxy',
+			weapon: 'severe depression',
+			power_level: 1000
+		  },
+		  {
+			name: 'Jabba the Hut',
+			role: 'villain',
+			universe: 'Star Wars',
+			weapon: 'henchmen',
+			power_level:  200
+		  },
+		  {
+			name: 'Zoë Alleyne Washburne',
+			role: 'First Mate',
+			universe: 'Firefly',
+			weapon: 'Winchester Model 1892 rifle',
+			power_level: 160
+		  },
+		  {
+			name: 'Peter Venkman',
+			role: 'Ghostbuster',
+			universe: 'Ghostbusters',
+			weapon: 'proton pack',
+			power_level: 120
+		  },
+		  {
+			name: 'Kathryn Janeway',
+			role: 'Captain',
+			universe: 'Star Trek',
+			weapon: 'Wit',
+			power_level: 140
+		  },
+		  {
+			name: 'Dr. Daniel Jackson',
+			role: 'Archeologist',
+			universe: 'Stargate',
+			weapon: 'Zat gun',
+			power_level: 120
+		  },
+		  {
+			name: 'Q',
+			role: 'God/Eternal',
+			universe: 'Star Trek',
+			weapon: 'Whatever he wants',
+			power_level: 1000
+		  },
+		  {
+			name: 'Boba Fett',
+			role: 'Bounty Hunter',
+			universe: 'Star Wars',
+			weapon: 'EE-3 carbine rifle',
+			power_level: 400
+		  },
+		  {
+			name: 'Yoda',
+			role: 'Jedi Master',
+			universe: 'Star Wars',
+			weapon: 'The Force',
+			power_level: 900
+		  },
+		  {
+			name: 'Mal Reynolds',
+			role: 'Captain',
+			universe: 'Firefly',
+			weapon: 'pistol',
+			power_level: 160
+		  },
+		  {
+			name: 'Spock',
+			role: 'First Mate',
+			universe: 'Star Trek',
+			weapon: 'Logic',
+			power_level: 170
+		  },
+		  {
+			name: 'R2-D2',
+			role: 'Ship`s Robot',
+			universe: 'Star Wars',
+			weapon: 'Data Probe',
+			power_level: 250
+		  },
+		  {
+			name: 'Lore',
+			role: 'Villain',
+			universe: 'Star Trek',
+			weapon: 'Intellect',
+			power_level: 800
+		  },
+		]
+
+		// ----------------------------------------------------------
+		// COMBINED PRACTICE 1
+		// ----------------------------------------------------------
+
+		// Create an array containing only the names of Captains from all universes.
+
+		// expected output: ['Mal Reynolds', 'Kathryn Janeway']
+
+		// solution:
+		const captainNames = characters.filter(c => c.role == 'Captain').map(c => c.name)
+
+
+		// ----------------------------------------------------------
+		// COMBINED PRACTICE 2
+		// ----------------------------------------------------------
+
+		// Group all characters by universe in a multidimensional array
+
+		// expected output:
+
+		// [ [ { name: 'Marvin the Paranoid Android',
+		//       role: 'First Mate',
+		//       universe: 'Hitchhikers Guide to the Galaxy',
+		//       weapon: 'severe depression',
+		//       power_level: 1000 } ],
+		//   [ { name: 'Jabba the Hut',
+		//       role: 'villain',
+		//       universe: 'Star Wars',
+		//       weapon: 'henchmen',
+		//       power_level: 200 },
+		//     { name: 'Boba Fett',
+		//       role: 'Bounty Hunter',
+		//       universe: 'Star Wars',
+		//       weapon: 'EE-3 carbine rifle',
+		//       power_level: 400 },
+		//     { name: 'Yoda',
+		//       role: 'Jedi Master',
+		//       universe: 'Star Wars',
+		//       weapon: 'The Force',
+		//       power_level: 900 },
+		//     { name: 'R2-D2',
+		//       role: 'Ship`s Robot',
+		//       universe: 'Star Wars',
+		//       weapon: 'Data Probe',
+		//       power_level: 250 } ],
+		//   [ { name: 'Zoë Alleyne Washburne',
+		//       role: 'First Mate',
+		//       universe: 'Firefly',
+		//       weapon: 'Winchester Model 1892 rifle',
+		//       power_level: 160 },
+		//     { name: 'Mal Reynolds',
+		//       role: 'Captain',
+		//       universe: 'Firefly',
+		//       weapon: 'pistol',
+		//       power_level: 160 } ],
+		//   [ { name: 'Peter Venkman',
+		//       role: 'Ghostbuster',
+		//       universe: 'Ghostbusters',
+		//       weapon: 'proton pack',
+		//       power_level: 120 } ],
+		//   [ { name: 'Kathryn Janeway',
+		//       role: 'Captain',
+		//       universe: 'Star Trek',
+		//       weapon: 'Wit',
+		//       power_level: 140 },
+		//     { name: 'Q',
+		//       role: 'God/Eternal',
+		//       universe: 'Star Trek',
+		//       weapon: 'Whatever he wants',
+		//       power_level: 1000 },
+		//     { name: 'Spock',
+		//       role: 'First Mate',
+		//       universe: 'Star Trek',
+		//       weapon: 'Logic',
+		//       power_level: 170 },
+		//     { name: 'Lore',
+		//       role: 'Villain',
+		//       universe: 'Star Trek',
+		//       weapon: 'Intellect',
+		//       power_level: 800 } ],
+		//   [ { name: 'Dr. Daniel Jackson',
+		//       role: 'Archeologist',
+		//       universe: 'Stargate',
+		//       weapon: 'Zat gun',
+		//       power_level: 120 } ] ]
+
+		// solution: 
+
+		const groupedCharacters = characters
+			.reduce((acc, curr, i, arr) => {
+				acc[curr.universe] = acc[curr.universe] === undefined ? [] : acc[curr.universe]
+				acc[curr.universe].push(curr)
+
+				if (i + 1 == arr.length) {
+					return Object.values(acc)
+				}
+
+				return acc
+		 }, {})
+
+		// ----------------------------------------------------------
+		// COMBINED PRACTICE 3
+		// ----------------------------------------------------------
+
+		// Create an array containing characters' names who are the only character listed in their universe.
+
+		// expected output: [ Marvin the Paranoid Android, Peter Venkman, Dr. Daniel Jackson ]
+
+		// solution:
+		const groupByUniverse = (acc, curr, i, arr) => {
+			acc[curr.universe] = acc[curr.universe] === undefined ? [] : acc[curr.universe]
+			acc[curr.universe].push(curr)
+
+			if (i + 1 == arr.length) {
+				return Object.entries(acc)
+					.filter(([_, characters]) => characters.length === 1)
+					.map(([_, characters]) => characters[0])
+			}
+
+			return acc
+		}
+
+		const soloCharacters = characters
+			.reduce(groupByUniverse, {})
+			.map(character => character.name)
+			.join(', ')
+
+		console.log('soloCharacters:', soloCharacters)
+
+		// ----------------------------------------------------------
+		// COMBINED PRACTICE 4
+		// ----------------------------------------------------------
+
+		// What is the average power level across all characters?
+
+		// expected output: 68.71319452795147
+
+		// solution:
+			const avgPowerLvl = characters
+			  .map(c => c.power_level)
+			  .reduce((acc, curr) => acc + curr, 0) / characters.length;
+
+			console.log('avgPowerLvl:', avgPowerLvl);
+
+---
+
+Intro to FP in JS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
