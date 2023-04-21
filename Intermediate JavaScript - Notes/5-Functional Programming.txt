@@ -932,25 +932,25 @@ ES6 Object Methods & Freeze
 		// expected output: [ Marvin the Paranoid Android, Peter Venkman, Dr. Daniel Jackson ]
 
 		// solution:
-		const groupByUniverse = (acc, curr, i, arr) => {
-			acc[curr.universe] = acc[curr.universe] === undefined ? [] : acc[curr.universe]
-			acc[curr.universe].push(curr)
+			const groupByUniverse = (acc, curr, i, arr) => {
+				acc[curr.universe] = acc[curr.universe] === undefined ? [] : acc[curr.universe]
+				acc[curr.universe].push(curr)
 
-			if (i + 1 == arr.length) {
-				return Object.entries(acc)
-					.filter(([_, characters]) => characters.length === 1)
-					.map(([_, characters]) => characters[0])
+				if (i + 1 == arr.length) {
+					return Object.entries(acc)
+						.filter(([_, characters]) => characters.length === 1)
+						.map(([_, characters]) => characters[0])
+				}
+
+				return acc
 			}
 
-			return acc
-		}
+			const soloCharacters = characters
+				.reduce(groupByUniverse, {})
+				.map(character => character.name)
+				.join(', ')
 
-		const soloCharacters = characters
-			.reduce(groupByUniverse, {})
-			.map(character => character.name)
-			.join(', ')
-
-		console.log('soloCharacters:', soloCharacters)
+			console.log('soloCharacters:', soloCharacters)
 
 		// ----------------------------------------------------------
 		// COMBINED PRACTICE 4
@@ -971,18 +971,308 @@ ES6 Object Methods & Freeze
 
 Intro to FP in JS
 
+HOFs - higher order functions
+	Takes in a function as an argument (a callback)
+	Returns a function
 
+	map, filter and reduce are HOFs (because they take a callback)
+	
+	Examples:
+		// Doubling
+		const nums = [1, 2, 3, 4, 5]
+		const doubles = nums.map(x => x * 2)
 
+		console.log(doubles)
+		// expected output: Array [2, 4, 6, 8, 10]
 
+		// Equivalent to:
+		const doubler = function (x) {
+			return x * 2
+		}
 
+		const doubles2 = nums.map(doubler)
 
+		// inside map…
+		// doubler(1, 0, [1, 2, 3, 4, 5])
 
+		console.log(doubles2)
+		// expected output: Array [2, 4, 6, 8, 10]
 
+	Exercises:
+		// 1. Create a function that when passed as a callback to the Higher Order function provided, makes the final return the number's square plus two
 
+		const addTwo = (callback) => {
+		  return callback(2) + 2;
+		};
 
+		const square = function (x) {
+		  return x * x;
+		};
 
+		const addTwoToSquare = addTwo(square);
+		console.log(addTwoToSquare);
 
+		// 2. Create a Higher Order Function that could take this callback to return a greeting
 
+		const createFullName = (first_name, last_name, title) => {
+		  return `${title} ${first_name} ${last_name}`;
+		};
 
+		const sentence = (callback) => {
+		  return "Hello " + callback("Thomas", "Owen", "Master");
+		};
 
+		const greeting = sentence(createFullName);
+		console.log(greeting);
 
+		// you might notice that this function is less than ideal - that's great! We'll talk about why next
+
+		---
+
+		weaponsWithNoises = [
+		  { name: "Phaser", noise: "bssszzsssss", universe: "Star Trek" },
+		  { name: "Blaster", noise: "Pew Pew", universe: "Star Wars" },
+		  { name: "Sonic Screwdriver", noise: "Pew Pew", universe: "Dr. Who" },
+		  { name: "Lightsaber", noise: "Pew Pew", universe: "Star Wars" },
+		  { name: "Noisy Cricket", noise: "Pew Pew", universe: "Men in Black" },
+		];
+
+		function weaponsFromUniverse(universe) {
+		  const useableWeapons = weaponsWithNoises.filter(
+			(w) => w.universe == universe
+		  );
+
+		  const useWeapon = (weaponName) => {
+			const weapon = useableWeapons.find((w) => weaponName == w.name);
+
+			if (weapon) {
+			  console.log(`used ${weapon.name}: ${weapon.noise}`);
+			} else {
+			  console.log(`${weaponName} is not a part of the ${universe} universe`);
+			}
+		  };
+		  return useWeapon;
+		}
+
+		// USAGE
+		const useStarWarsWeapon = weaponsFromUniverse("Star Wars");
+
+		useStarWarsWeapon("Blaster"); // console logs 'used Blaster: Pew Pew'
+		useStarWarsWeapon("Noisy Cricket"); // console logs 'Noisy Cricket is not a part of the Star Wars universe'
+				
+---
+
+Data Manipulation Problem Set
+
+	var nearEarthObjects = require("./nasa_near_earth_object_API.json");
+
+	// The object in the nasa_near_earth_object_API.json is a copy of real API response from the NASA Near-Earth Object API.
+	// Find the following from the API:
+
+	// Total Count ---------------------------------------------
+	// 1. How many near-earth objects did NASA register for the date of the search? Return the asteroid count.
+	console.log("Near-earth objects count: " + nearEarthObjects.element_count);
+
+	// Averages ------------------------------------------------
+	// 2. What was the average absolute magnitude of all the near earth objects in this data set? Return the average absolute_magnitude_h.
+
+	const asteroids = Object.values(nearEarthObjects.near_earth_objects).flat();
+
+	const avgAbsMag =
+	  asteroids
+		.map((c) => c.absolute_magnitude_h)
+		.reduce((acc, curr) => acc + curr, 0) / asteroids.length;
+
+	console.log("avgAbsMag:", avgAbsMag);
+
+	// Hint - you can achieve this multiple ways, but the reduce method can be a little-known but cool way to find averages. To do it though, you'll need to use the initial_value argument
+	// For some extra challenge try using reduce with the initial setting argument. To learn more about it, take a look at this page: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
+
+	// Hazardous -----------------------------------------------
+	// 3. A list of all objects (their id, name, max size in miles, and closest approach in miles) that are labeled potentially hazardous
+
+	const result = asteroids
+	  .filter((asteroid) => asteroid.is_potentially_hazardous_asteroid === true)
+	  .map((c) => {
+		return {
+		  Id: c.id,
+		  name: c.name,
+		  max_size: c.estimated_diameter.miles.estimated_diameter_max,
+		  closest_approach: c.close_approach_data[0].miss_distance.miles,
+		};
+	  });
+	console.log(result);
+
+	// Too Close for Comfort -----------------------------------
+	// 4. A list of all objects (their id, name, max size in miles, and closest approach in miles) that have a miss_distance of less than 900,000 miles
+
+	const result2 = asteroids
+	  .filter(
+		(asteroid) => asteroid.close_approach_data[0].miss_distance.miles < 900000
+	  )
+	  .map((c) => {
+		return {
+		  Id: c.id,
+		  name: c.name,
+		  max_size: c.estimated_diameter.miles.estimated_diameter_max,
+		  closest_approach: c.close_approach_data[0].miss_distance.miles,
+		};
+	  });
+	console.log(result2);
+
+	// Alert ---------------------------------------------------
+	// 5. Of all the near-earth objects for this date, find the time that the asteroid with the nearest miss will be closest to earth.
+
+	const result3 = asteroids.reduce((closest, current) => {
+	  const currDist = parseInt(current.close_approach_data[0].miss_distance.miles);
+	  const closestDist = parseInt(
+		closest.close_approach_data[0].miss_distance.miles
+	  );
+	  if (currDist < closestDist) {
+		return current;
+	  } else {
+		return closest;
+	  }
+	});
+
+	console.log(result3.close_approach_data[0].close_approach_date_full);
+
+---
+
+Functional DOM Manipulations
+
+	Dealing with the DOM is inherently not Functional!! (relies on “side effects” and other practices)
+	
+		const root = document.getElementById('root')
+		// First Pass - Basic Layout
+		const render = root => {
+			root.innerHTML = `<div> I EXIST! </div>`
+		}
+
+		render(root)
+
+		// Second Pass - Easier to add more layout
+		const render = root => {
+			root.innerHTML = App()
+		}
+
+		const Welcome = () => {  // pure function  
+
+			return `Welcome to my JavaScript Program!`
+		} 
+
+		const App = () => { // higher-order and pure function
+			return `
+				<h1>${Welcome()}<h1>
+			   <div> I EXIST! </div>
+			`
+		}  
+		render(root)
+
+	State
+		Functional Programming stays away from creating a global state, but in a real life web application, 
+		sticking to that rule proves difficult and overly complicated to do.
+		
+		Instead of no global state, what we can do is create just one place for all that global information to live.
+			-> an immutable object to store data, used as the single source of truth for our application’s data
+		
+			const store = {
+				user: {
+					first_name: ‘John’,
+					last_name: ‘Doe’
+				}
+			}
+
+		store literally stores app data and can be passed as an argument into our functions
+		
+			const render = (root, state) => {
+			   root.innerHTML = App(state)
+			}
+
+			const Welcome = (name) => {
+			   return `Welcome, ${name} to my JavaScript Program!`
+			}
+
+			const App = (state) => {
+			   return `
+				   <h1>${Welcome(state.user.first_name)}<h1>
+				  <div> I EXIST! </div>
+			   `
+			}
+
+			render(root, store)		
+
+		we also need to tell the JS when to run
+		-> wait for the load event to make sure that our JavaScript doesn’t run before the DOM element ‘root’ exists
+		
+			window.addEventListener('load', () => {
+			   render(root, store)
+			})
+			
+		we also need to update the store when things change
+		
+			const updateStore = (store, newState) => {
+				store = Object.assign(store, newState)
+				render(root, store)
+			}
+			
+	Altogether that makes: 
+	
+		// Given
+
+		let store = {
+			user: {
+				first_name: 'John',
+				last_name: 'Doe'
+			}
+		}
+
+		const render = (root, state) => {
+			root.innerHTML = App(state)
+		}
+
+		const Welcome = (name) => {
+			return `Welcome, ${name} to my JavaScript Program!`
+		}
+		
+		/*const Menu = (show) => {
+			if(show) {
+				return (`
+						<nav>
+							<ul>
+								<li>About Us</li>
+								<li>Contact Us</li>
+								<li>Login</li>
+							</ul>
+						</nav>
+					`)
+		   }
+			return `<nav>Menu</nav>`
+		}*/	
+
+		const App = (state) => {
+			return `
+			   <h1>${Welcome(state.user.first_name)}<h1>
+			  <div> I EXIST! </div>
+		   `
+		}
+
+		window.addEventListener('load', () => {
+			render(root, store)
+		})
+		// But what if state changes at some point in our app?
+		// Using the object methods we have learned so far in this course, 
+		// create a function called updateStore that takes in the old state, the new state, and updates the old state with any new information
+		// This won't be a pure function, instead of a return, call the render method again
+
+		const updateStore = (store, newState) => {
+			store = Object.assign(store, newState)
+			render(root, store)
+		}
+			
+---
+
+No such a thing as truly “Functional” DOM manipulations, but we have now seen how to isolate the parts of our logic that can’t be functional 
+( like the render method from the exercise) so that we are free to write the main logic in a Functional style.
+
+This is exactly how React handles non-Functional DOM manipulations !!
