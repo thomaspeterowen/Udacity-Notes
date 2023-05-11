@@ -1276,3 +1276,225 @@ No such a thing as truly “Functional” DOM manipulations, but we have now see
 ( like the render method from the exercise) so that we are free to write the main logic in a Functional style.
 
 This is exactly how React handles non-Functional DOM manipulations !!
+
+---
+
+Going Further with Functional
+
+	the most common Functional libraries for JavaScript - ImmutableJS, Ramda, RxJS, and Redux
+
+	focus of this section will be to highlight how these tools put different Functional practices to good use
+
+Persistent Data Structures
+
+	Instead of making copies of variables, we make trees of data and have the variables reference values in the tree. 
+
+	In Javascript, we are going to build a naive example of an array type persistent data structure.
+	
+		class PersistentArray {
+			constructor(items = []) {
+						this.persistentArray = items
+			}
+			
+			push(newItem) {
+						return new PersistentArray(this.persistentArray.concat(newItem))
+			}
+			
+			pop() {
+						let poppedArray = [...this.persistentArray]
+						poppedArray.pop()
+						return new PersistentArray(poppedArray)
+			}
+		}
+
+		const a = new PersistentArray([1, 2, 3])
+		console.log("A", a)
+
+		const b = a.push(4)
+		console.log("A", a)
+		console.log("B", b)
+
+		const c = a.pop()
+		console.log("A", a)
+		console.log("B", b)
+		console.log("C", c)
+
+	Array A is unchanged and the new array B contains the array with ‘4’ added to it.
+	Array C -> [1, 2]
+	
+ImmutableJS (external library): https://immutable-js.com/
+	a library that gives us Persistent Data Structures in JavaScript
+	you create an object, it can look pretty much like a normal JavaScript object, but under the hood it will behave like a persistent data structure
+
+	can be added via a script tag in an HTML page, or via a node module
+	
+		// Put this in an html page
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/immutable/3.8.2/immutable.min.js"></script>
+
+		// Or, you can install `immutable` module using npm and import this module in a js file
+		npm install immutable // install immutable from the terminal
+		const Immutable = require('immutable'); // add this line in js file
+
+
+	Basic Syntax
+	
+		// Getting and Setting values using Immutable module
+
+		// Immutable objects are called ‘maps’
+		const Immutable = require('immutable'); // import immutable module
+
+		// this is how we declare an immutable Object
+		const map1 = Immutable.Map({ a: 1, b: 2, c: 3 });
+
+		// Here is an important part. We can’t update map1, so instead we have to make the change on map2. 
+		const map2 = map1.set('b', 50);
+
+		// Because of this, the old state of map1 is still available
+		map1.get('b'); // 2
+
+		// And map2 shows our update.
+		map2.get('b'); // 50
+		console.log(map2.get('b'))
+
+		// equality check
+		map1.equals(map2); // false
+		console.log(map1.equals(map2))
+
+		// Use with ordinary objects
+		const state1 = Immutable.Map({ a: 1, b: 2, c: 3, d: 4 });
+		const state2 = Immutable.Map({ c: 10, a: 20, t: 30 });
+		const obj = { d: 100, o: 200, g: 300 };
+		const map3 = state1.merge(state2, obj);
+		console.log(map3.toJS()) // toJS() is a helper method to convert immutable object into javascript dictionary
+
+		// If you open the returned object, you can see that it isn't an ordinary object
+		// you'll find all the properties under "entries"
+
+		// Use with ordinary arrays
+		// An immutable array is declared as a `List` like this:
+		const numbers = Immutable.List([1, 2, 3]);
+
+		//But Immutable can also work with plain JS arrays
+		const otherNumbers = [4, 5, 6]
+
+	Exercise "ImmutableJS" solution too bad to follow, see course for more details!!
+	
+	Implementing ImmutableJS Review
+	Updating our store code to use ImmutableJS
+
+		let store = Immutable.Map({ 
+			user: Immutable.Map({ 
+				firstName: 'John', 
+				lastName: 'Doe' 
+			}), 
+		})
+
+		function updateStore(state, newState) {
+			store = state.merge(newState)
+			render(root, store)
+		}
+
+		updateStore(store, newState)
+		console.log(store.getIn(['user', 'name']))
+		
+RxJS (Reactive Extensions for JavaScript)
+	a library for reactive programming using Observables. 
+	provides a way to work with asynchronous data streams, such as events, HTTP requests, and animations, in a more efficient and manageable way. 
+	makes it easier to compose complex asynchronous operations, handle errors, and control concurrency, among other things.
+	often used in frontend web development with frameworks like Angular, but it can be used in any JavaScript environment.
+
+		// A function runs once and returns one set of information
+		// An observable is like a function that runs for a period of time and can return many sets of information - a stream of information
+
+		// An observable returns a stream of information
+		// An observer (here, observable.subscribe) is how we ‘listen’ or subscribe to data being returned by an observable.
+
+		const observable = new Rx.Observable(subscriber => {
+		  subscriber.next(1);
+		  subscriber.next(2); // "return" another value
+		  subscriber.next(3); // "return" another value
+		  setTimeout(() => {
+			subscriber.next(4);
+			subscriber.complete();
+		  }, 1000);
+		});
+		 
+		console.log('just before subscribe');
+
+		observable.subscribe({
+		  next(x) { console.log('got value ' + x); },
+		  error(err) { console.error('something wrong occurred: ' + err); },
+		  complete() { console.log('done'); }
+		});
+
+		console.log('just after subscribe');
+
+		// the word 'next' is a special RxJS observable word that allows the observable to "return" multiple things over a period of time
+
+
+		// There are three types of values an Observable Execution can deliver:
+
+		// "Next" notification: sends a value such as a Number, a String, an Object, etc.
+		// "Error" notification: sends a JavaScript Error or exception.
+		// "Complete" notification: does not send a value.
+
+		// "Next" notifications are the most important and most common type: they represent actual data being delivered to a subscriber. 
+		// "Error" and "Complete" notifications may happen only once during the Observable Execution, and there can only be either one of them.
+
+Ramda (https://ramdajs.com/)
+	a library of functions that help JavaScript developers write better Functional code
+	goal is to do an excellent job of providing JavaScript developers with truly Functional tools
+
+	Each function is self-contained, pure, side effect free, and does not mutate anything
+	Each function is written in JavaScript, so with the amount of JavaScript you know now, you can go to the source code and be able to understand how they built their function
+
+Functional Redux
+	a predictable state container for JavaScript applications. 
+	provides a centralized store to manage the state of an application, and a set of rules to govern how that state can be updated. 
+	state is represented as a plain JavaScript object, and actions are dispatched to modify that state.
+	actions describe what happened in the application, and are handled by reducers, which are pure functions that take the previous state and the action, and return the new state.
+	makes it easy to reason about state changes, and enables powerful features like time-travel debugging and hot reloading.
+	often used in combination with React, but it can be used with any framework or library.
+
+	Reducers === pure functions
+	
+	example code
+	
+		import { DAMAGE_SHIELD, REPAIR_SHIELD } from './actions'
+
+		const initialState = {
+			shieldLevel: 100,
+		}
+
+		const shieldsReducer = (state = initialState, action) => {
+			switch (action.type) {
+				case DAMAGE_SHIELD:
+					const { amount } = action
+					let { shieldLevel } = state
+
+					shieldLevel -= amount
+
+					return {
+						...state,
+						shieldLevel,
+					}
+
+				case REPAIR_SHIELD:
+					const { amount } = action
+					let { shieldLevel } = state
+
+					shieldLevel += amount
+
+					return {
+						...state,
+						shieldLevel,
+					}
+			}
+		}	
+
+---
+
+Persistent Data Structures - data structures that store all versions of a variable and allow you to go back and edit previous versions
+Partially Persistent Data Structures - data structures that store all versions of a variable, but only allow you to view previous versions
+
+---
