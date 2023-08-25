@@ -1,0 +1,1184 @@
+
+ --- REACT ---
+
+---  React Fundamentals ---
+
+A JavaScript library for building user interfaces, a popular front end library that developers use to create dynamic applications for the web.
+
+React is part of the MERN Stack:
+	MongoDB - DB
+	Express - backend
+	React - frontend
+	Node - runtime environment
+	
+Benefits of React:
+	ease of use
+	reusable components
+	declarative API
+
+-- composition
+
+	definition: to combine simple functions to build more complicated ones
+	is a large part of what makes React so great
+	
+	simple funcction:
+		
+		function getProfileLink (username) {
+			return 'https://github.com/' + username
+		}
+		
+	another simple function:
+	
+		function getProfilePic (username) {
+			return 'https://github.com/' + username + '.png?size=200'
+		}
+
+	to compose them, we combine them together in side another function:
+	
+		function getProfileData (username) {
+			return {
+				pic: getProfilePic(username),
+				link: getProfileLink(username)
+			}
+		}
+
+	getProfileLink() – just builds up a string of the user's GitHub profile link
+	getProfilePic() – just builds up a string the user's GitHub profile picture
+	getProfileData() – returns a new object	
+
+	Note: a good function should follow the "DOT" rule: Do One Thing
+	
+-- React & Composition
+	
+	React makes use of the power of composition, heavily!
+	(builds up pieces of a UI using components)
+	
+	React example:
+	
+		<Page>
+		 <Article />
+		 <Sidebar />
+		</Page>
+
+	(simple components, combine them together, and create a more complex component)
+	
+-- Imperative vs Declarative Code
+
+	imperative: expressing a command; commanding
+		we tell JavaScript exactly what to do and how to do it
+		
+		Example:
+		
+			const people = ['Amanda', 'David', 'Andrew', 'Karen', 'Richard', 'Tyler'];
+			const excitedPeople = [];
+
+			for (let i = 0; i < people.length; i++) {
+			  excitedPeople[i] = people[i] + '!';
+			}
+
+			commanding JavaScript what to do at every single step
+		
+	declarative: 
+		we don't code up all of the steps to get us to the end result
+		instead we declare what we want done, and JavaScript will take care of doing it
+
+		Example:
+		
+			const excitedPeople = people.map((name) => name + "!");
+		
+			Here (compared to the imperative example) we have not:
+				Created an iterator object
+				Told the code when it should stop running
+				Used the iterator to access a specific item in the people array
+				Stored each new string in the excitedPeople array
+			
+			all of those steps are taken care of by JavaScript's map() Array method!
+
+	React is Declarative !!!
+	
+	Example:
+	
+		<button onClick={activateTeleporter}>Activate Teleporter</button>
+		
+		no event listener with all the steps involved to set it up
+		simply declaring that we want the activateTeleporter() to run on click
+
+-- Unidirectional / Bidirectional Data Flow
+
+	other frameworks (e.g. Angular, Ember) use two-way data binding (bidirectional)
+	
+	the data is kept in sync throughout the app no matter where it is updated
+	
+	really powerful, but it can make the application harder to reason about and know where the data is actually being updated
+	
+	data moves differently with React, it uses unidirectional data flow!!
+	the data flows from the parent component to a child component...
+
+	We have:
+		A parent component
+		A child component
+
+	data lives in the parent component and is passed down to the child component
+	both the parent and the child components can use the data
+	
+	if the data must be updated, then only the parent component should perform the update
+	if the child component needs to make a change to the data, then it would send the updated data to the parent component where the change will actually be made
+	
+	once the change is made in the parent component, the child component will be passed the data (that has just been updated!)
+	
+	unidirectional data flow -->> much easier to understand how the application works.
+	
+-- React is just JavaScript
+
+Example:
+
+	const shelf1 = [
+	  { name: "name1", shelf: "a" },
+	  { name: "name2", shelf: "a" },
+	];
+	const shelf2 = [
+	  { name: "name3", shelf: "b" },
+	  { name: "name4", shelf: "b" },
+	];
+	const allBooks = [...shelf1, ...shelf2];
+
+	const filter = (books) => (shelf) => books.filter((b) => b.shelf === shelf);
+
+	const filterBy = filter(allBooks);
+	const booksOnShelf = filterBy("b");
+	
+react developer should be familiar with all syntax above, also map() and filter() methods !!
+
+-- Functional Programming
+
+React builds on a lot of the techniques of functional programming...
+
+---
+
+map() example:
+const albumSalesStrings = musicData.map((album) => $`{album.name} by {album.artist} sold {album.sales} copies`);
+
+filter() example:
+const results = musicData.filter(album => album.name.length <= 25 && album.name.length >= 10);
+
+-- Combining map and filter
+
+filter() first, and then map()
+map() runs the function once for each item in the array, it will be faster if the array were already filtered
+
+const popular = musicData
+    .filter(album => album.sales > 1000000)
+    .map(album => `${album.artist} is a great performer`);
+
+---
+
+why React is great:
+	Its compositional model
+	Its declarative nature
+	The way data flows from parent to child
+	And that React is really just JavaScript!
+
+
+ --- Rendering UI with React ---
+
+React uses JavaScript objects to create React elements
+
+createElement()
+
+	React.createElement( / *type* /, / *props* /, / *content* / );
+	
+	takes in a description of an element and returns a plain JavaScript object
+	
+	type – either a string or a React Component. can be a string of any existing HTML element (e.g. 'p', 'span', or 'header') or you could pass a React component
+	props – either null or an object. an object of HTML attributes and custom data about the element.
+	content – null, a string, a React Element, or a React Component Anything that you pass here will be the content of the rendered element
+	
+Apps built with React typically have a single root DOM node. 
+For example, an HTML file may contain a <div> with the following:
+
+	<div id="root"></div>
+
+By passing this DOM node into getElementById(), React will end up controlling the entirety of its contents. 
+Another way to think about this is that this particular <div> will serve as a "hook" for our React app; this is the area where React will take over and render our UI!
+
+--
+
+JSX
+	a syntax extension for JavaScript that allows you to write HTML-like code within your JavaScript code, which then gets transformed into React elements.
+
+Example:
+
+	const greeting = <h1>Hello, World!</h1>;
+
+This can be combined with JavaScript as below:
+
+	const user = {
+		firstName: 'John',
+		lastName: 'Doe'
+	};
+
+	const element = <h1>Hello, {user.firstName} {user.lastName}!</h1>;	
+
+
+JSX must only return a single element!!
+	element may have any number of descendants, but there must be a single root element wrapping your overall JSX (typically a <div> or a <span>)
+
+	Wrong:
+		const message = (
+		 <h1>All About JSX:</h1>
+		 <ul>
+		   <li>JSX</li>
+		   <li>is</li>
+		   <li>awesome!</li>
+		 </ul>
+		);
+		
+	-->> Syntax error: Adjacent JSX elements must be wrapped in an enclosing tag
+
+	Right:
+		const message = (
+		 <div>
+		   <h1>All About JSX:</h1>
+		   <ul>
+			<li>JSX</li>
+			<li>is</li>
+			<li>awesome!</li>
+		   </ul>
+		 </div>
+		);
+		
+as JSX is really just a syntax extension for createElement(), this makes sense; 
+createElement() takes in only one tag name (as a string) as its first argument...
+
+--
+
+Components
+
+Components refer to reusable pieces of code ultimately responsible for returning HTML to be rendered onto the page. 
+More often than not, you'll see React components written with JSX.
+
+one thing absolutely required in any React function-component: a return statement.
+
+
+declaring components:
+
+	const ContactList = () => {  
+	  // ...  
+	}  
+
+	OR
+
+	function ContactList() {  
+	  // ...  
+	}  
+
+	feel free to use whichever you feel most comfortable with...
+	
+---
+
+Exercise: JavaScript Expressions with JSX
+
+	import logo from "./logo192.png";
+	import "./App.css";
+
+	const App = () => {
+	  const name = "React";
+
+	  const facts = {
+		releaseDate: "May 2013",
+		language: "JavaScript",
+		license: "MIT",
+	  };
+
+	  const aboutReact = (facts) =>
+		`Release date: ${facts.releaseDate}. Language: ${facts.releaseDate}. License: ${facts.license}.`;
+
+	  return (
+		<div className="container">
+		  <img src={logo} alt="React logo" />
+		  <h1>{name}</h1>
+		  <p>{aboutReact(facts)}</p>
+		</div>
+	  );
+	};
+
+	export default App;
+
+--
+
+create-react-app
+
+	allows developers to quickly set up a new React project with a good default configuration
+	handles the build setup (with Webpack and Babel) for both development and production, without requiring any manual configuration
+
+	https://github.com/facebook/create-react-app
+	
+	https://react.dev/learn/start-a-new-react-project
+	(documentation different these days, but create-react-app still valid!!)
+
+	JSX is awesome, but it does need to be transpiled into regular JavaScript before reaching the browser
+	We use Babel and Webpack to accomplish this
+		-> bundles all of our assets (JavaScript files, CSS, images, etc.)
+	
+	npx create-react-app <name of your app>
+	
+	if any problems, do the following:
+	
+		npm uninstall -g create-react-app  
+		npx clear-npx-cache  
+		npx create-react-app <name of your app>  
+
+	sometimes you see warnings with npm, they should not effect the course content,
+	but usually can be fixed by running this to force security audit:
+	
+		npm audit fix --force
+
+	soemtimes YARN is mentioned, especially with earlier versions,
+	YARN was created by Facebook to fix some issues with npm, but we don't have to use it...
+	
+	React version can be checked in the package.json file, new versions are continuously being released.
+	
+	Exercise:
+	
+		npx create-react-app my-react-app
+		cd my-react-app
+		npm install
+		npm start
+	
+---
+
+Composing with Components
+
+favor composition over inheritance
+
+composition -> the practice of building more complex components by combining simpler, smaller components
+
+in practice it means to reuse components, using props to pass data and even UI to child components etc...
+
+Instead of extending base components to add more UI or behavior, we compose elements in different ways using nesting and props. 
+You ultimately want your UI components to be independent, focused, and reusable.
+
+---
+
+-- State Management
+
+Passing Data with Props
+
+App.js:
+
+	import "../css/App.css";
+	import ListContacts from "./ListContacts";
+
+	const App = () => {
+
+	  const contacts = [
+		{
+		  id: "karen",
+		  name: "Karen Isgrigg",
+		  handle: "karen_isgrigg",
+		  avatarURL: "http://localhost:5001/karen.jpg",
+		},
+		{
+		  id: "richard",
+		  name: "Richard Kalehoff",
+		  handle: "richardkalehoff",
+		  avatarURL: "http://localhost:5001/richard.jpg",
+		},
+		{
+		  id: "tyler",
+		  name: "Tyler McGinnis",
+		  handle: "tylermcginnis",
+		  avatarURL: "http://localhost:5001/tyler.jpg",
+		},
+	  ];
+
+	  return (
+		<div>
+		  <ListContacts contacts={contacts} />
+		</div>
+	  )
+	};
+
+	export default App;
+
+
+ListContacts.js:
+
+	const ListContacts = ({contacts}) => {
+		return (
+			<ol className="contact-list">
+				{
+					contacts.map((contact) => (
+						<li key={contact.id} className="contact-list-item">
+						<div 
+							className="contact-avatar" 
+							style={{
+								backgroundImage: `url(${contact.avatarURL})`,
+							}}
+						></div>
+						<div className="contact-details">
+							<p>{contact.name}</p>
+							<p>@{contact.handle}</p>
+						</div>
+						<button className="contact-remove">Remove</button>
+						</li>
+					))
+				}
+			</ol>
+		)
+	}
+
+	export default ListContacts;
+
+---
+
+A prop is any input that you pass to a React component. 
+Just like an HTML attribute, a prop name and value are added to the component.
+
+	// passing a prop to a component
+	<LogoutButton text='Wanna log out?' />
+
+	// access the prop inside the component
+	const App = (props) => {
+	  return <div>{props.text}</div>;
+	};
+
+Alternatively, you can use object destructuring as a shorthand without writing props directly. 
+The following code produces the same result as the code snippet above:
+
+	// access the prop inside the component
+	const App = ({ text }) => {
+	  return <div>{text}</div>;
+	};
+
+---
+
+Solution Code:
+
+	const App = () => {
+	  return (
+		<div>
+		  <header className="App-header">
+			<img src={logo} className="App-logo" alt="logo" />
+			<h1 className="App-title">ReactND - Coding Practice</h1>
+		  </header>
+		  <h2>Favorite Movies</h2>
+		  <ul>
+			{profiles.map((profile) => {
+			  const userName = users[profile.userID].name;
+			  const favMovieName = movies[profile.favoriteMovieID].name;
+
+			  return (
+				<li key={profile.id}>
+				  <p>{`${userName}'s favorite movie is "${favMovieName}."`}</p>
+				</li>
+			  );
+			})}
+		  </ul>
+		</div>
+	  );
+	};
+
+--
+
+Passing Data II
+
+More complicated example with multiple components and data being passed down as props...
+
+Exercise and solution done on VM and in GitRepo:
+	https://github.com/udacity/React-Fundamentals-Exercises/
+	L3. State Management/2. Passing Data II
+
+---
+
+-- State
+
+-- Add state to component:
+
+props are effectively "read-only" data that are immutable
+
+state, on the other hand, represents mutable data that ultimately affects what is rendered on the page!
+
+state is managed internally by the component itself and is meant to change over time e.g. user input.
+
+Example:
+	
+	// import useState hook!
+	import {useState} from 'react';
+	import "../css/App.css";
+	import ListContacts from "./ListContacts";
+
+	const App = () => {
+	  
+	  // define state and pass is initial values
+	  const [contacts, setContacts] = useState([
+		{
+		  id: "karen",
+		  name: "Karen Isgrigg",
+		  handle: "karen_isgrigg",
+		  avatarURL: "http://localhost:5001/karen.jpg",
+		},
+	  ]);
+
+	  return (
+		<div>
+		  <ListContacts contacts={contacts} />
+		</div>
+	  )
+	};
+
+	export default App;
+
+--
+
+Note: avoid initializing state with "props" -> error-prone anti-pattern, since state will only be initialized with props when the component is first created!!
+
+--
+
+By having a component manage its own state, any time there are changes made to that state, React will know and automatically make the necessary updates to the page.
+	
+State allows React to re-render the page
+	it compares previous output and new output, determines what has changed, makes these decisions for us
+	this process of determining what has changed in the previous and new outputs is called Reconciliation
+
+
+In React, UI is a function of the state:
+	UI = fn(state)
+
+-- Update state with useState():
+
+Example (deleting a contact):
+
+App.js (add function removeContact and pass to child component):
+
+	import {useState} from 'react';
+	import "../css/App.css";
+	import ListContacts from "./ListContacts";
+
+	const App = () => {
+
+	  const removeContact = (contact) => {
+		setContacts(contacts.filter(c => c.id !== contact.id))
+	  }
+
+	  const [contacts, setContacts] = useState([
+		{
+		  id: "karen",
+		  name: "Karen Isgrigg",
+		  handle: "karen_isgrigg",
+		  avatarURL: "http://localhost:5001/karen.jpg",
+		},
+	  ]);
+
+	  return (
+		<div>
+		  <ListContacts contacts={contacts} onDeleteContact={removeContact} />
+		</div>
+	  )
+	};
+
+	export default App;
+
+ListContacts.js (receive onDeleteContact and add onClick event):
+
+	const ListContacts = ({contacts, onDeleteContact}) => {
+		return (
+			<ol className="contact-list">
+				{
+					contacts.map((contact) => (
+						<li key={contact.id} className="contact-list-item">
+						<div 
+							className="contact-avatar" 
+							style={{
+								backgroundImage: `url(${contact.avatarURL})`,
+							}}
+						></div>
+						<div className="contact-details">
+							<p>{contact.name}</p>
+							<p>@{contact.handle}</p>
+						</div>
+						<button className="contact-remove" onClick={() => onDeleteContact(contact)}>Remove</button>
+						</li>
+					))
+				}
+			</ol>
+		)
+	}
+
+	export default ListContacts;
+
+Note: this will remove data on click, but changes not propogated to any DB, so data comes back with refresh...
+
+---
+
+Exercise (like button):
+
+	import {useState} from 'react';
+	import corgi from "./corgi.jpg";
+	import "./App.css";
+
+	const App = () => {
+	  const [likes, setLikes] = useState(0);
+
+	  return (
+		<div className="container">
+		  <h2>Like this photo!</h2>
+		  <img src={corgi} alt="Corgi"></img>
+		  <button className="add-like" onClick={() => setLikes(likes + 1)}>Like</button>
+		  <p>Amount of likes: {likes}</p>
+		</div>
+	  );
+	};
+
+	export default App;
+
+--
+
+Typechecking with PropTypes
+
+PropTypes is a package that lets us define the data type we want to see right from the get-go, 
+and warns us during development if the prop that's passed to the component doesn't match what is expected.
+
+npm install --save prop-types
+
+Example:
+	
+	// import first!!
+	import propTypes from 'prop-types';
+
+	const ListContacts = ({contacts, onDeleteContact}) => {
+		return (
+			<ol className="contact-list">
+				{
+					contacts.map((contact) => (
+						<li key={contact.id} className="contact-list-item">
+						<div 
+							className="contact-avatar" 
+							style={{
+								backgroundImage: `url(${contact.avatarURL})`,
+							}}
+						></div>
+						<div className="contact-details">
+							<p>{contact.name}</p>
+							<p>@{contact.handle}</p>
+						</div>
+						<button className="contact-remove" onClick={() => onDeleteContact(contact)}>Remove</button>
+						</li>
+					))
+				}
+			</ol>
+		)
+	};
+	
+	// definte rules
+	ListContacts.propTypes = {
+		contacts: propTypes.array.isRequired,
+		onDeleteContact: propTypes.func.isRequired,
+	}
+
+	export default ListContacts;
+
+if data types do not match / data missing, either app won't build or error will be logged in console
+
+very useful functionality!!
+
+--
+
+-- Controlled Components
+
+A component which renders a form, but the source of truth for that form state lives inside of the component state rather than inside of the DOM.
+
+Example(filter query using controlled component):
+
+	import propTypes from 'prop-types';
+	import {useState} from 'react';
+
+	const ListContacts = ({contacts, onDeleteContact}) => {
+		const [query, setQuery] = useState("");
+		const updateQuery = (query) => {
+			setQuery(query.trim());
+		};
+		const clearQuery = () => {
+			updateQuery("")
+		}
+		const showingContacts = query === "" ? contacts : contacts.filter((c) => c.name.toLowerCase().includes(query.toLowerCase()));
+
+		return (
+			<div className="list-contacts">
+				<div className="list-contacts-top">
+					<input className="search.contacts" type="text" placeholder="Search Contacts" value={query} onChange = {(event) => updateQuery(event.target.value)}>
+					</input>
+				</div>
+				{
+					showingContacts.length !== contacts.length && (
+						<div className="showing-contacts">
+							<span>
+								Now showing {showingContacts.length} of {contacts.length}
+							</span>
+							<button onClick={clearQuery} >Show all</button>
+						</div>
+					)
+				}
+				<ol className="contact-list">
+					{
+						showingContacts.map((contact) => (
+							<li key={contact.id} className="contact-list-item">
+							<div 
+								className="contact-avatar" 
+								style={{
+									backgroundImage: `url(${contact.avatarURL})`,
+								}}
+							></div>
+							<div className="contact-details">
+								<p>{contact.name}</p>
+								<p>@{contact.handle}</p>
+							</div>
+							<button className="contact-remove" onClick={() => onDeleteContact(contact)}>Remove</button>
+							</li>
+						))
+					}
+				</ol>
+			</div>
+		)
+	};
+
+	ListContacts.propTypes = {
+		contacts: propTypes.array.isRequired,
+		onDeleteContact: propTypes.func.isRequired,
+	}
+
+	export default ListContacts;
+	
+--
+
+Controlled Components refer to components that render a form, but the "source of truth" for that form state lives inside of the component state rather than inside of the DOM. 
+
+Benefits:
+	Instant input validation
+	Conditionally enable or disable buttons
+	Enforce input formats
+	
+In our ListContacts component, not only does the component render a form, but it also controls what happens in that form based on user input. 
+In this case, event handlers update the component's state with the user's search query. 
+And as we've learned: any changes to React state will cause a re-render on the page, effectively displaying our live search results.
+
+--
+
+-- React Developer Tools: can be installed as plugin for chrome, new react tab allows for better debugging!
+
+--
+
+-- Solution (make echo show the text typed in input):
+
+	import logo from "./logo.svg";
+	import "./App.css";
+	import {useState} from 'react';
+
+	const App = () => {
+	  const [value, setInput] = useState("");
+	  const updateText = (event) => {
+		setInput(event.target.value);
+	  };  
+	  return (
+		<div className="App">
+		  <header className="App-header">
+			<img src={logo} className="App-logo" alt="logo" />
+			<h1 className="App-title">ReactND - Coding Practice</h1>
+		  </header>
+		  <div className="container">
+			<input type="text" placeholder="Say Something" value={value} onChange={updateText} />
+			<p className="echo">Echo:</p>
+			<p>{value}</p>
+		  </div>
+		</div>
+	  );
+	};
+	export default App;
+
+--
+
+Exercise (splitting components out):
+
+	https://github.com/udacity/React-Fundamentals-Exercises/tree/master/L3.%20State%20Management/5.%20Controlled%20Components%20II/Solution/src
+
+--
+
+Exercise (complex example of multiple component with multiple 'useState' definitions):
+
+	https://github.com/udacity/React-Fundamentals-Exercises/tree/master/L3.%20State%20Management/6.%20All%20Together/Solution
+
+--
+
+--- HOOKS ---
+
+"let you use state and other React features without writing a class!"
+
+	-> Hooks Allow for Lifecycle and State in Functional Components
+
+--
+
+Exercise (Managing State Recap):
+
+	https://github.com/udacity/React-Fundamentals-Exercises/tree/master/L4.%20Hooks/1.%20State%20Management%20Recap/Solution/src
+	
+--
+
+--- Side Effects in React
+
+Data fetching, setting up a subscription, and manually changing the DOM in React components are all examples of side effects. 
+Whether or not you’re used to calling these operations “side effects” (or just “effects”), you’ve likely performed them in your components before.
+
+-- useEffect
+
+to get data in react, we don NOT fetch data in the return statement, because the return statement has to be free from side effects...
+
+we can use a special hook that allows us to implement side effects in components: useEffect
+
+import { useEffect } from "react";
+
+Example (importing contact data from API instead of hard-coded and removing contacts from backen):
+
+	import {useState, useEffect} from 'react';
+	import "../css/App.css";
+	import ListContacts from "./ListContacts";
+	import * as ContactsAPI from "../utils/ContactsAPI";
+
+	const App = () => {
+
+	  const removeContact = (contact) => {
+
+		ContactsAPI.remove(contact);
+
+		setContacts(contacts.filter(c => c.id !== contact.id))
+	  }
+
+	  const [contacts, setContacts] = useState([]);
+
+	  useEffect(() => {
+		const getContacts = async () => {
+		  const res = await ContactsAPI.getAll();
+		  setContacts(res);
+		}
+		getContacts();
+	  }, [])
+
+	  return (
+		<div>
+		  <ListContacts contacts={contacts} onDeleteContact={removeContact} />
+		</div>
+	  )
+	};
+
+	export default App;
+
+Note: The second argument is an empty array. We include this because we want the effect to run only during mount and unmount 
+(i.e., not after every time props or state changes). The empty array also tells React that there are no dependencies needed.
+
+The useEffect hook is versatile, and mimics the lifecycle methods that React developers typically leverage in their applications. 
+It's a great way to run custom functions or logic at specific points of a component's lifecycle, especially at the time it's mounted to the DOM.
+
+--
+
+-- Side Effect Cleanup
+
+-> Prevents Memory Leaks
+
+we can leverage a cleanup function, which allows us to cancel asynchronous calls, unsubscribe from any subscriptions, or otherwise stop any unnecessary operations.
+
+Returning a Cleanup Function
+
+Example:
+
+	const ImageInput = ({ maxHeight, className, name }) => {
+	  // ...
+
+	  let fileInput;
+
+	  const [value, setValue] = useState("");
+
+	  useEffect(() => {
+		setCanvas(document.createElement("canvas"));
+		fileInput.form.addEventListener("reset", handleFormReset);
+
+		return () => {
+		  if (fileInput) {
+			fileInput.form.removeEventListener("reset", handleFormReset);
+		  }
+		};
+	  }, [fileInput]);
+
+	  // ...
+	};
+
+	export default ImageInput;
+
+Another Example (updating value of 'mounted' when component no longer mounted):
+
+	import { useEffect, useState } from "react";
+
+	const Login = () => {
+	  const [currentUser, setCurrentUser] = useState(null);
+
+	  // ...
+
+	  useEffect(() => {
+		let mounted = true;
+
+		if (user.exists) {
+		  if (mounted) {
+			setCurrentUser(user);
+		  }
+
+		  // ...
+		}
+
+		return () => {
+		  mounted = false;
+		};
+	  }, []);
+
+	  // ...
+	};
+
+	export default Login;
+
+-- Other Hooks
+
+	useContext
+	useReducer
+	useCallback
+	useMemo
+	useRef
+	useImperativeHandle
+	useLayoutEffect
+	useDebugValue
+
+	https://react.dev/reference/react
+
+--
+
+--- ROUTING ---
+
+-- single page application
+
+	One way a single page app loads is by downloading the entire site's contents all at once. 
+	This way, when you're navigating around on the site, everything is already available to the browser, and it doesn't need to refresh the page. 
+	
+	Another way single page apps work is by downloading everything that's needed to render the page the user requested. 
+	Then when the user navigates to a new page, asynchronous JavaScript requests are made for just the content that was requested.
+
+-- React Router
+
+	turns React projects into single page applications
+	
+	by providing a number of specialized components that manage the creation of links, 
+	manage the app's URL, provide transitions when navigating between different URL locations, and so much more...
+
+-- conditional rending in react
+	
+	jsx syntyx used to determine is a component should be shown or not
+	
+	If the first expression evaluates to true, then the second expression is run. 
+	However, if the first expression evaluates to false, then the second expression is skipped.
+
+	Example (ListContacts will be shown):
+		...
+		const [screen, setScreen] = useState("list");
+		...
+		return (
+		<div>
+		  {
+			screen === "list" && (<ListContacts contacts={contacts} onDeleteContact={removeContact} />)
+		  }
+		  {
+			screen === "create" && (<CreateContact />)
+		  }
+		</div>
+		)
+
+	Example (changing component show with click on button):
+
+		...
+		const [screen, setScreen] = useState("list");
+		...
+		return (
+		<div>
+		  {screen === "list" && (
+			<ListContacts
+			  contacts={contacts}
+			  onDeleteContact={removeContact}
+			  onNavigate={() => {
+				setScreen("create");
+			  }}
+			/>
+		  )}
+		  {screen === "create" && <CreateContact />}
+		</div>
+		);
+  
+	++
+		...
+		const ListContacts = ({ contacts, onDeleteContact, onNavigate }) => {
+		...  
+  
+		<a href="#create" onClick={onNavigate} className="add-contact">
+		  Add Contact
+		</a>
+--
+
+Problems when using browser back button... solved by using React Router!
+
+--
+
+npm install --save react-router-dom
+
+--
+
+<BrowserRouter>
+
+In order for React Router to work properly, you need to wrap your entire app in a BrowserRouter component (adding to index.js):
+
+	import React from "react";
+	import ReactDOM from "react-dom";
+	import { BrowserRouter } from "react-router-dom";
+	import "./css/index.css";
+	import App from "./components/App";
+
+	ReactDOM.render(
+	  <BrowserRouter>
+		<App />
+	  </BrowserRouter>,
+	  document.getElementById("root")
+	);
+
+Under the hood, BrowserRouter wraps the history library which makes it possible for your app to be made aware of changes in the URL.
+
+--
+
+The main idea here is that when you use BrowserRouter, what you're really doing is returning a Router component and passing history to it (via a navigator prop). 
+The history comes from the history library, built by the same creators as React Router. 
+
+In a nutshell, when you use BrowserRouter, you're creating a history object which will listen to changes in the URL and make sure your app is made aware of those changes.
+
+
+-- Navigation with <Link>
+
+Link is a straightforward way to provide declarative, accessible navigation around your application. 
+By passing a to property to the Link component, you tell your app which path to route to.
+
+Since the <Link> component fully renders a proper anchor tag (<a>) with the appropriate href, you can expect it to behave how a normal link on the web behaves.
+
+	import { Link } from "react-router-dom";
+
+Example:
+
+	<Link to="/about">About</Link>
+
+More advanced example:
+
+	<Link
+	  to={{
+		pathname: "/courses",
+		search: "?sort=name",
+		hash: "#the-hash",
+		state: { fromDashboard: true },
+	  }}
+	>
+	  Courses
+	</Link>;
+
+--
+
+-- Component Paths with <Route>
+
+import { Route, Routes } from "react-router-dom";
+
+App.js
+
+	return (
+  	<Routes>
+	  <Route exact path="/" element={
+   	    <ListContacts contacts={contacts} onDeleteContact={removeContact} />
+  	    } />
+	  <Route path="/create" element={
+		<CreateContact />
+	    } />
+	  </Routes>
+	);
+
+The Route component is a critical piece of building an application with React Router 
+because it's the component which is going to decide which components are rendered based on the current URL path.
+
+--
+
+-- Serialize the Form Data
+
+the form will serialize the values from user input (i.e., the name and email), adding them as a query string to the URL
+
+we can add some additional functionality by having our app serialize these form fields on its own...
+
+npm install --save form-serialize
+
+Example (CreateContact.js):
+
+	import serializeForm from "form-serialize";
+	...
+	const CreateContact = ({ onCreateContact }) => {
+		const handleSubmit = (e) => {
+			e.preventDefault();
+			const values = serializeForm(e.target, { hash: true });
+			if(onCreateContact){
+				onCreateContact(values);
+			}
+		}
+		return (
+			<div>
+				<Link className="close-create-contact" to="/">
+					Close
+				</Link>
+				<form onSubmit={handleSubmit} className="create-contact-form">
+					<ImageInput className="create-contact-avatar-input" name="avatarURL" maxHeight={64}/>
+					<div className="create-contact-details">
+						<input type="text" name="name" placeholder="name"></input>
+						<input type="text" name="handle" placeholder="handle"></input>
+						<button>Add Contact</button>
+					</div>
+				</form>
+			</div>
+		);
+	};
+
+Example (App.js):
+
+	import { Route, Routes, useNavigate } from "react-router-dom";
+	...
+	let navigate = useNavigate();
+	...
+	const createContact = (contact) => {
+	const create = async () => {
+	  const res = await ContactsAPI.create(contact);
+	  setContacts(contacts.concat(res));
+	};
+	create();
+	navigate("/");
+	}; 
+
+	return (
+	<Routes>
+	  <Route exact path="/" element={
+		<ListContacts contacts={contacts} onDeleteContact={removeContact} />
+	  } />
+	  <Route path="/create" element={
+		<CreateContact onCreateContact={ (contact) => {
+		  createContact(contact)
+		}
+		} />
+	  } />
+	</Routes>
+	);
+	
+--
+
+Full contacts app available here under main: https://github.com/udacity/React-Fundamentals-C1-React-Contacts
+
+--
